@@ -18,17 +18,14 @@ int main(int argc, char** argv){
     // 	backup = nullptr;
     // }
 
-    Workout* workout_test    = new Workout(0, "Jump ropes", 90, ANAEROBIC);
-    Workout* workout_test1   = new Workout(0, "MMA", 90, MIXED);
-    Workout* workout_test2   = new Workout(0, "Running", 90, CARDIO);
+    Workout workout_test    = Workout(0, "Jump ropes", 90, ANAEROBIC);
+    Workout workout_test1   = Workout(1, "MMA", 90, MIXED);
+    Workout workout_test2   = Workout(2, "Running", 90, CARDIO);
 
-    delete workout_test;
-    delete workout_test1;
-    delete workout_test2;
+    cout << workout_test.getId() << ":" << workout_test.getName() << ":" << workout_test.getPrice() << ":" << workout_test.getType() << endl;
+    cout << workout_test1.getId() << ":" << workout_test1.getName() << ":" << workout_test1.getPrice() << ":" << workout_test1.getType() << endl;
+    cout << workout_test2.getId() << ":" << workout_test2.getName() << ":" << workout_test2.getPrice() << ":" << workout_test2.getType() << endl;
 
-    int a;
-    cin >> a;
-    cout << a;
 
     return 0;
 }

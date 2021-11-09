@@ -9,17 +9,20 @@ enum WorkoutType{
 
 class Workout{
 public:
-    Workout(int w_id, std::string w_name, int w_price, WorkoutType w_type);
+    Workout(int w_id, std::string w_name, int w_price, WorkoutType w_type);     // Constructor
+    Workout(const Workout& other);
     int getId() const;
     std::string getName() const;
     int getPrice() const;
     WorkoutType getType() const;
+    bool operator<(const Workout &b) const;
+    bool operator>(const Workout &b) const;
+
 private:
 	const int id;
     const std::string name;
     const int price;
     const WorkoutType type;
 };
-
 
 #endif

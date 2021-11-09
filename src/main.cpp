@@ -22,5 +22,13 @@ int main(int argc, char** argv){
     Workout* workout_test1   = new Workout(0, "MMA", 90, MIXED);
     Workout* workout_test2   = new Workout(0, "Running", 90, CARDIO);
 
+    delete workout_test;
+    delete workout_test1;
+    delete workout_test2;
+
+    int a;
+    cin >> a;
+    cout << a;
+
     return 0;
 }

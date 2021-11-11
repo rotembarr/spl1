@@ -3,7 +3,12 @@
 
 #include <vector>
 #include <string>
-#include "Workout.h"
+#include <limits>
+#include <algorithm>
+#include "../include/Workout.h"
+
+typedef std::pair<int, int> idAndPrice;
+
 
 class Customer{
 public:
@@ -16,7 +21,6 @@ private:
     const std::string name;
     const int id;
 };
-
 
 class SweatyCustomer : public Customer {
 public:

@@ -10,6 +10,7 @@ typedef std::pair<int, Workout> OrderPair;
 class Trainer{
 public:
     Trainer(int t_capacity);
+    Trainer(int t_capacity, int t_id);
     int getCapacity() const;
     void addCustomer(Customer* customer);
     void removeCustomer(int id);
@@ -21,8 +22,10 @@ public:
     void closeTrainer();
     int getSalary();
     bool isOpen();
+    std::string toString() const;
 private:
     int capacity;
+    int id;
     bool open;
     std::vector<Customer*> customersList;
     std::vector<OrderPair> orderList; //A list of pairs for each order for the trainer - (customer_id, Workout)

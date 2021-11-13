@@ -54,7 +54,7 @@ std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_
             anaerobic_workouts.push_back(&workout_options.at(i));
         }
     }
-    std::sort(anaerobic_workouts.begin(), anaerobic_workouts.end(), Workout.operator<());
+    std::sort(anaerobic_workouts.begin(), anaerobic_workouts.end());
     std::vector<int> result = std::vector<int>();
     for(size_t i = 0; i < anaerobic_workouts.size(); i++){
         result.push_back(anaerobic_workouts[i]->getId());

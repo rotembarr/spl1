@@ -5,9 +5,9 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "../include/Workout.h"
-#include "../include/Trainer.h"
-#include "../include/Action.h"
+#include "Workout.h"
+#include "Trainer.h"
+#include "Action.h"
 
 
 class Studio{		

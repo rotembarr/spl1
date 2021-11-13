@@ -5,7 +5,7 @@
 #include <iostream>
 
 enum WorkoutType{
-    ANAEROBIC, MIXED, CARDIO
+    ANAEROBIC, MIXED, CARDIO, UNKNOWN  
 };
 
 class Workout{

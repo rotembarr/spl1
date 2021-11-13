@@ -1,4 +1,4 @@
-#include "../include/Studio.h"
+#include "Studio.h"
 
 
 Studio::Studio(): 	

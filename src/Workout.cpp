@@ -1,4 +1,4 @@
-#include "../include/Workout.h"
+#include "Workout.h"
 
 //  Basic functions
 Workout::Workout(int w_id, std::string w_name, int w_price, WorkoutType w_type):
@@ -9,7 +9,7 @@ Workout::Workout(int w_id, std::string w_name, int w_price, WorkoutType w_type):
 }
 
 Workout::Workout(const Workout &other): 
-    Workout(other.id, other.name, other.price, other.type) {
+    Workout(other.getId(), other.getName(), other.getPrice(), other.getType()) {
 }
 
 int Workout::getId() const{
@@ -26,6 +26,24 @@ int Workout::getPrice() const{
 
 WorkoutType Workout::getType() const{
     return this->type;
+}
+
+bool Workout::operator<(const Workout &b) const{
+    if(this->price < b.getPrice())
+        return true;
+    else if(b.getPrice() < this->price)
+        return false;
+    else
+        return this->id < b.getId();
+}
+
+bool Workout::operator>(const Workout &b) const{
+    if(this->price > b.getPrice())
+        return true;
+    else if(b.getPrice() > this->price)
+        return false;
+    else
+        return this->id < b.getId();
 }
 
 std::string Workout::toString() const {
@@ -57,45 +75,4 @@ WorkoutType Workout::strToType(std::string &str) {
     else {
        return UNKNOWN;
     }
-}
-
-// Workout& Workout::operator=(const Workout& other) {
-//     std::cout << "asasas" << std::endl;
-
-//     if (this != &other) {
-//         // id=other.getId();
-//         // name=other.getName();
-//         // price=other.getPrice();
-//         // type=other.getType();
-//     }
-//     return (*this);
-// }
-
-
-#include <vector>
-int testWorkout () {
-    Workout a(0,"a",0,CARDIO);
-    Workout b(1,"b",1,MIXED);
-
-    std::cout << a.toString() << std::endl;
-    std::cout << b.toString() << std::endl;
-
-//    b = a;
-
-    std::cout << a.toString() << std::endl;
-    std::cout << b.toString() << std::endl;
-
-    std::cout << "part 2" << std::endl;
-    std::vector<Workout> vec;
-    vec.push_back(a);
-    std::cout << std::endl;
-
-    std::cout << a.getId() << std::endl;
-    std::cout << vec[0].getId() << std::endl;
-    // for (Workout workout : vec) {
-    for (std::vector<Workout>::size_type i = 0; i!=vec.size(); i++) {
-        std::cout << vec[i].getId() << std::endl;
-    }
-
-    return 0;
 }

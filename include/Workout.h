@@ -5,7 +5,7 @@
 #include <iostream>
 
 enum WorkoutType{
-    ANAEROBIC, MIXED, CARDIO, NUM_OF_WORKOUT_TYPES, UNKNOWN
+    ANAEROBIC, MIXED, CARDIO
 };
 
 class Workout{
@@ -16,10 +16,11 @@ public:
     std::string getName() const;
     int getPrice() const;
     WorkoutType getType() const;
+    bool operator<(const Workout &b) const;
+    bool operator>(const Workout &b) const;
     std::string toString() const;
     static std::string typeToString(WorkoutType type);
     static WorkoutType strToType(std::string &str);
-//    Workout& operator=(const Workout& other);
 private:
 	const int id;
     const std::string name;

@@ -1,25 +1,37 @@
-all : mem_check Workout.o 
+CC = g++
+CFLAGS = -g -Wall -std=c++11
+LFLAGS = -L/usr/lib
 
-Workout.o : 
-	g++ -g -Wall -std=c++11 -o bin/Workout.o src/Workout.cpp
-	./bin/Workout.o
+BIN = bin
+SRC = src
+INCLUDE = include
 
-Customer.o :
-	g++ -g -Wall -std=c++11 -o bin/Customer.o src/Customer.cpp src/Workout.cpp
-	./bin/Customer.o
 
-Trainer.o :
-	g++ -g -Wall -std=c++11 -o bin/Trainer.o src/Trainer.cpp src/Customer.cpp src/Workout.cpp
-	./bin/Trainer.o
+all :  comp
 
-Studio.o : 
-	g++ -g -Wall -std=c++11 -o bin/Trainer.o src/Studio.cpp src/Trainer.cpp src/Customer.cpp src/Workout.cpp
-	./bin/Studio.o
+comp : $(BIN)/Action.o $(BIN)/Customer.o $(BIN)/main.o $(BIN)/Studio.o $(BIN)/Trainer.o $(BIN)/Workout.o
+	$(CC) -o $(BIN)/studio $(BIN)/Action.o $(BIN)/Customer.o $(BIN)/main.o $(BIN)/Studio.o $(BIN)/Trainer.o $(BIN)/Workout.o $(LFLAGS)
 
-main.o :
-	g++ -g -Wall -std=c++11 -o bin/main.o src/main.cpp src/Studio.cpp src/Trainer.cpp src/Customer.cpp src/Workout.cpp
+$(BIN)/Action.o : $(SRC)/Action.cpp
+	$(CC) $(CFLAGS) -c -Iinclude -o $(BIN)/Action.o $(SRC)/Action.cpp
 
-run : main.o
-	./bin/main.o /home/rotem/Downloads/ExmapleInput.txt
-mem_check : 
-	valgrind --leak-check=full --show-reachable=yes studio.h 
+$(BIN)/Customer.o : $(SRC)/Customer.cpp
+	$(CC) $(CFLAGS) -c -Iinclude -o $(BIN)/Customer.o $(SRC)/Customer.cpp
+
+$(BIN)/main.o : $(SRC)/main.cpp 
+	$(CC) $(CFLAGS) -c -Iinclude -o $(BIN)/main.o $(SRC)/main.cpp
+
+$(BIN)/Studio.o : $(SRC)/Studio.cpp
+	$(CC) $(CFLAGS) -c -Iinclude -o $(BIN)/Studio.o $(SRC)/Studio.cpp
+
+$(BIN)/Trainer.o : $(SRC)/Trainer.cpp
+	$(CC) $(CFLAGS) -c -Iinclude -o $(BIN)/Trainer.o $(SRC)/Trainer.cpp
+
+$(BIN)/Workout.o : $(SRC)/Workout.cpp
+	$(CC) $(CFLAGS) -c -Iinclude -o $(BIN)/Workout.o $(SRC)/Workout.cpp
+
+clean:
+	rm -f bin/*
+
+mem_check : comp
+	valgrind --leak-check=full --show-reachable=yes $(BIN)/studio 

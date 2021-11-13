@@ -41,6 +41,9 @@ int main(int argc, char** argv){
     chp.order(workout_options);
     hmc.order(workout_options);
     fbc.order(workout_options);
+    fbc2.order(workout_options);
+    fbc3.order(workout_options);
+    fbc4.order(workout_options);
 
     cout << "swt: " << swt.toString() << endl;
     cout << "chp: " << chp.toString() << endl;
@@ -59,11 +62,30 @@ int main(int argc, char** argv){
     trainer.addCustomer(&fbc3);
     trainer.addCustomer(&fbc4);
     std::vector<Customer*> customers = trainer.getCustomers();
-    for(Customer* customer : customers){ cout << customer->getName() << "(" << customer->getId() << ")" << endl; }
+
+    //  Test 1:
+    cout << endl << "Customers 1:" << endl;
+    for(Customer* customer : customers){ cout << customer->toString() << endl; }
+    cout << endl;
+    trainer.removeCustomer(4);
     trainer.removeCustomer(5);
-    for(Customer* customer : customers){ cout << customer->getName() << "(" << customer->getId() << ")" << endl; }
-    cout << trainer.getCustomer(3)->getName() << "(" << trainer.getCustomer(3)->getId() << ")" << endl;
-    //trainer.getOrders()
+    customers = trainer.getCustomers();
+    cout << "Remove(5):" << endl;
+    for(Customer* customer : customers){ cout << customer->toString() << endl; }
+    cout << endl;
+    cout << "Get 2:" << endl;
+    cout << trainer.getCustomer(2)->getName() << "(" << trainer.getCustomer(2)->getId() << ")" << endl;
+
+
+    cout << endl;
+    cout << "Order 0:" << endl;
+    for(size_t i = 0; i < trainer.getCustomers().size(); i++){
+        std::vector<int> customer_order = trainer.getCustomer(i)->order(workout_options);
+        trainer.order(i, customer_order, workout_options);
+    }
+    for(OrderPair order_pair : trainer.getOrders()){
+        cout << "(" + std::to_string(order_pair.first) + "): " + order_pair.second.getName(); 
+    }
     //trainer.order
     trainer.openTrainer();
     cout << trainer.isOpen() << endl;

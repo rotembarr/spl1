@@ -11,9 +11,9 @@ void Trainer::addCustomer(Customer* customer) {
         this->customersList.push_back(customer);
 }
 void Trainer::removeCustomer(int id) {
-    for(std::vector<Customer*>::iterator it = this->customersList.begin(); it != this->customersList.end(); ++it){
-        if((*it)->getId() == id)
-            this->customersList.erase(it);
+    for(size_t i = 0; i < this->customersList.size(); i++){
+        if(this->customersList[i]->getId() == id)
+            this->customersList.erase(this->customersList.begin() + i);
     }
 }
 Customer* Trainer::getCustomer(int id){

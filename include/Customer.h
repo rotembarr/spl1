@@ -24,7 +24,6 @@ public:
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
 private:
-    std::vector<const Workout*> workout_strategy;
 };
 
 
@@ -34,7 +33,6 @@ public:
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
 private:
-    const Workout* workout_strategy;
 };
 
 
@@ -44,7 +42,6 @@ public:
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
 private:
-    std::vector<const Workout*> workout_strategy;
 };
 
 
@@ -54,7 +51,6 @@ public:
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
 private:
-    std::vector<const Workout*> workout_strategy;
 };
 
 

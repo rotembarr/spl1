@@ -33,5 +33,5 @@ $(BIN)/Workout.o : $(SRC)/Workout.cpp
 clean:
 	rm -f bin/*
 
-mem_check : 
+mem_check : comp
 	valgrind --leak-check=full --show-reachable=yes $(BIN)/studio 

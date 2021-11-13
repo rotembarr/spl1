@@ -1,6 +1,5 @@
 #include "Customer.h"
-#include <iostream>
-#include <algorithm>
+
 
 // Customer
 Customer::Customer(std::string c_name, int c_id): name(c_name), id(c_id){}
@@ -21,7 +20,7 @@ std::vector<int> SweatyCustomer::order(const std::vector<Workout> &workout_optio
     return id_vector;
 }
 std::string SweatyCustomer::toString() const {
-    return this->getName() + "(" + std::to_string(this->getId()) + "):";;
+    return (this->getId() + " " + this->getName());  
 }
 
 
@@ -37,8 +36,10 @@ std::vector<int> CheapCustomer::order(const std::vector<Workout> &workout_option
     }
     return {cheapest->getId()};
 }
-std::string CheapCustomer::toString() const{
-    return this->getName() + "(" + std::to_string(this->getId()) + ")";
+
+
+std::string CheapCustomer::toString() const {
+    return (this->getId() + " " + this->getName());
 }
 
 
@@ -53,15 +54,17 @@ std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_
             anaerobic_workouts.push_back(&workout_options.at(i));
         }
     }
-    std::sort(anaerobic_workouts.begin(), anaerobic_workouts.end(), Workout_comp_high_to_low());
+    std::sort(anaerobic_workouts.begin(), anaerobic_workouts.end());
     std::vector<int> result = std::vector<int>();
     for(size_t i = 0; i < anaerobic_workouts.size(); i++){
         result.push_back(anaerobic_workouts[i]->getId());
     }
     return result;
 }
-std::string HeavyMuscleCustomer::toString() const{
-    return this->getName() + "(" + std::to_string(this->getId()) + "):";
+
+
+std::string HeavyMuscleCustomer::toString() const {
+    return (this->getId() + " " + this->getName());
 }
 
 
@@ -71,56 +74,38 @@ std::string HeavyMuscleCustomer::toString() const{
 FullBodyCustomer::FullBodyCustomer(std::string name, int id): Customer(name, id){
 }
 std::vector<int> FullBodyCustomer::order(const std::vector<Workout> &workout_options){
-    
-    std::vector<int> result = std::vector<int>();
+      int chpCardioId = -1;
+    int chpCardioPrice = std::numeric_limits<int>::max();
+    int expMixId = -1;
+    int expMixPrice = std::numeric_limits<int>::min();
+    int chpAnerId = -1;
+    int chpAnerPrice = std::numeric_limits<int>::max();
+    std::vector<int> ord;
 
-    //  Cheapest cardio
-    const Workout* wo_pointer = nullptr;
-    for(size_t i = 0; i < workout_options.size(); i++){
-        if(workout_options[i].getType() == CARDIO){
-            if(wo_pointer == nullptr)
-                wo_pointer = &workout_options[i];
-            else {
-                if(workout_options[i] < *wo_pointer){
-                    wo_pointer = &workout_options[i];
-                }
-            }
+    // Walk all options by appearence order and search workouts as described above.
+    for (std::vector<Workout>::size_type i = 0; i != workout_options.size(); i++) {
+        if ((workout_options[i].getType() == WorkoutType::CARDIO) & (workout_options[i].getPrice() < chpCardioPrice)) {
+            chpCardioPrice = workout_options[i].getPrice();
+            chpCardioId = workout_options[i].getId();
+        }
+        else if ((workout_options[i].getType() == WorkoutType::MIXED) & (workout_options[i].getPrice() > expMixPrice)) {
+            expMixPrice = workout_options[i].getPrice();
+            expMixId = workout_options[i].getId();
+        }
+        else if ((workout_options[i].getType() == WorkoutType::ANAEROBIC) & (workout_options[i].getPrice() < chpAnerPrice)) {
+            chpAnerPrice = workout_options[i].getPrice();
+            chpAnerId = workout_options[i].getId(); 
         }
     }
-    result.push_back(wo_pointer->getId());
 
-    //  Most expensive Mix
-    wo_pointer = nullptr;
-    for(size_t i = 0; i < workout_options.size(); i++){
-        if(workout_options[i].getType() == MIXED){
-            if(wo_pointer == nullptr)
-                wo_pointer = &workout_options[i];
-            else {
-                if(workout_options[i] > *wo_pointer){
-                    wo_pointer = &workout_options[i];
-                }
-            }
-        }
+    if (!((chpCardioId == -1) | (expMixId == -1) | (chpAnerId == -1))) {
+        ord.push_back(chpCardioId);
+        ord.push_back(expMixId);
+        ord.push_back(chpAnerId);
     }
-    result.push_back(wo_pointer->getId());
 
-    //  Cheapest anaerobic
-    wo_pointer = nullptr;
-    for(size_t i = 0; i < workout_options.size(); i++){
-        if(workout_options[i].getType() == ANAEROBIC){
-            if(wo_pointer == nullptr)
-                wo_pointer = &workout_options[i];
-            else {
-                if(workout_options[i] < *wo_pointer){
-                    wo_pointer = &workout_options[i];
-                }
-            }
-        }
-    }
-    result.push_back(wo_pointer->getId());
-
-    return result;
+    return ord; 
 }
 std::string FullBodyCustomer::toString() const{
-    return this->getName() + "(" + std::to_string(this->getId()) + "):";
+	return (this->getId() + " " + this->getName());    
 }

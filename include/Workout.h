@@ -25,4 +25,26 @@ private:
     const WorkoutType type;
 };
 
+class Workout_comp_high_to_low {
+    public :
+        bool operator()(const Workout* a, const Workout* b) const {
+            if(a->getPrice() > b->getPrice())
+                return true;
+            if(b->getPrice() > a->getPrice())
+                return false;
+            return a->getId() < b->getId();
+        }
+};
+
+class Workout_comp_low_to_high {
+    public: 
+        bool operator()(const Workout* a, const Workout* b) const {
+            if(a->getPrice() < b->getPrice())
+                return true;
+            if(b->getPrice() < a->getPrice())
+                return false;
+            return a->getId() < b->getId();
+        }
+};
+
 #endif

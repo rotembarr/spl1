@@ -16,23 +16,26 @@ int Trainer::getCapacity() const {
 	return this->capacity;
 }
 
+int Trainer::getId() const {
+	return this->id;
+}
+
 void Trainer::addCustomer(Customer* customer) {
-	if (customer == null) {
-		throw "null ptr argument";
+	if (customer == nullptr) {
+		std::cout << "Int-Error: null ptr argument" << std::endl;
 	}
 
-	this->customerList.push_back(customer);
+	this->customersList.push_back(customer);
 }
 
 void Trainer::removeCustomer(int id) {
 	int cIndex = -1;
-	int cId = -1;
 
 	// Find customer index
-	for (std::vector<Customer*>::size_type i = 0; i < this->customerList.size(); i++) {
-		if (this->customerList[i]->getId() == id) {
+	for (std::vector<Customer*>::size_type i = 0; i < this->customersList.size(); i++) {
+		if (this->customersList[i]->getId() == id) {
 			cIndex = i;
-			id = this->customerList[i]->getId();
+			id = this->customersList[i]->getId();
 		}
 	}
 
@@ -40,52 +43,55 @@ void Trainer::removeCustomer(int id) {
 		return; // TODO
 	}
 
-	// Remove customer orders.
-	int i = 0;
-	for (OrderPair p : orderList) {
-		if (std::get<0>(p) == cId) {
-			orderList.erase(i);
-		}
-		i++;
-	}
-
-	// Remove customer object.
-	this->customerList.erase(cIndex);
+	// Remove customer object. TODO
+	this->customersList.erase(this->customersList.begin() + cIndex);
 
 }
 
 Customer* Trainer::getCustomer(int id) {
-	for (std::vector<Customer*>::size_type i = 0; i < this->customerList.size(); i++) {
-		if (this->customerList[i]->getId() == id) {
-			return this->customerList[i];
+	for (std::vector<Customer*>::size_type i = 0; i < this->customersList.size(); i++) {
+		if (this->customersList[i]->getId() == id) {
+			return this->customersList[i];
 		}
 	}
+
+	return nullptr;
 }
 
 std::vector<Customer*>& Trainer::getCustomers() {
-	return this.customerList;
+	return this->customersList;
 }
 std::vector<OrderPair>& Trainer::getOrders() {
 	return this->orderList;
 }
 
-void Trainer::order(const int customer_id, const std::vector<int> workout_ids, const std::vector<Workout>& workout_options);
+void Trainer::order(const int customer_id, const std::vector<int> workout_ids, const std::vector<Workout>& workout_options) {} //TODO
 
-void Trainer::openTrainer();
+void Trainer::openTrainer() {
+
+	if (this->isOpen()) {
+		std::cout << "Workout session does not exist or is already open" << std::endl;
+	} 
+
+	this->open = true;
+} 
 
 void Trainer::closeTrainer() {
-	std::string s = "Trainer " + std::to_string(this->id) + " closed. Salary " + + "NIS";
-	std::cout << 
+	std::string s;
+
+	if (!this->isOpen()) {
+		s = "Trainer does not exist or is not open";
+	} else {
+		s = "Trainer " + std::to_string(this->id) + " closed. Salary " + std::to_string(this->getSalary()) + "NIS";
+	}
+
+	std::cout << s << std::endl;
+
+	this->open = false;
 }
 
 int Trainer::getSalary() {
-	int salary = 0;
-
-	for (OrderPair p : orderList) {
-		salary += std::get<1>(p).getPrice();
-	}
-
-	return salary;
+	return this->calcSalary();
 }
 
 bool Trainer::isOpen() {
@@ -93,25 +99,35 @@ bool Trainer::isOpen() {
 }
 
 std::string Trainer::toString() const {
-	std::string s = "Trainer " + std::to_string(this->id) + " status: " + (this.open ? "open" : " close") + "\n";
+	std::string s = ("Trainer " + std::to_string(this->id) + " status: " + (this->open ? "open" : " close") + "\n");
 
-	if (!this->isOpen())
+	if (!this->open)
 		return s;
 
 	// Print Costumers.
-	s += "Customers\n"
-	for (Customer* c : this->customerList) {
+	s += "Customers\n";
+	for (Customer* c : this->customersList) {
 		s += std::to_string(c->getId()) + " " + c->getName() + "\n"; 
 	}
 
 	// Print Orders.
-	s += "Orders\n"
+	s += "Orders\n";
 	for (OrderPair op : this->orderList) {
-		s += std::get<1>(op).getName() + " " + std::to_string(std::get<1>(op).getPrice()) + "NIS " + std::to_string(std::get<1>(op)) + "\n"; 
+		s += std::get<1>(op).getName() + " " + std::to_string(std::get<1>(op).getPrice()) + "NIS " + std::to_string(std::get<0>(op)) + "\n"; 
 	}
 
 	// Print salary.
-	s += "Current Trainer's Salary:" + std::to_string(this->getSalary()) + "NIS\n";
+	s += "Current Trainer's Salary:" + std::to_string(this->calcSalary()) + "NIS\n";
 
 	return s;
+}
+
+int Trainer::calcSalary() const {
+	int salary = 0;
+
+	for (OrderPair p : orderList) {
+		salary += std::get<1>(p).getPrice();
+	}
+
+	return salary;
 }

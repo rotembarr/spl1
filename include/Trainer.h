@@ -12,6 +12,7 @@ public:
     Trainer(int t_capacity);
     Trainer(int t_capacity, int t_id);
     int getCapacity() const;
+    int getId() const;
     void addCustomer(Customer* customer);
     void removeCustomer(int id);
     Customer* getCustomer(int id);
@@ -24,6 +25,8 @@ public:
     bool isOpen();
     std::string toString() const;
 private:
+    int calcSalary() const;
+
     int capacity;
     int id;
     bool open;

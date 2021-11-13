@@ -35,7 +35,6 @@ void Trainer::removeCustomer(int id) {
 	for (std::vector<Customer*>::size_type i = 0; i < this->customersList.size(); i++) {
 		if (this->customersList[i]->getId() == id) {
 			cIndex = i;
-			id = this->customersList[i]->getId();
 		}
 	}
 

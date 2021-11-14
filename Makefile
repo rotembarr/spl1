@@ -33,5 +33,8 @@ $(BIN)/Workout.o : $(SRC)/Workout.cpp
 clean:
 	rm -f bin/*
 
+run : comp
+	${BIN}/studio /home/rotem/Downloads/ExmapleInput.txt
+
 mem_check : comp
 	valgrind --leak-check=full --show-reachable=yes $(BIN)/studio 

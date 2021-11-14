@@ -6,18 +6,21 @@ using namespace std;
 Studio* backup = nullptr;
 
 int main(int argc, char** argv){
-    // if(argc!=2){
-    //     std::cout << "usage: studio <config_path>" << std::endl;
-    //     return 0;
-    // }
-    // string configurationFile = argv[1];
-    // Studio studio(configurationFile);
-    // studio.start();
-    // if(backup!=nullptr){
-    // 	delete backup;
-    // 	backup = nullptr;
-    // }
+    if(argc!=2){
+        std::cout << "usage: studio <config_path>" << std::endl;
+        return 0;
+    }
+    string configurationFile = argv[1];
+    Studio studio(configurationFile);
+    studio.start();
+    if(backup!=nullptr){
+    	delete backup;
+    	backup = nullptr;
+    }
+    return 0;
+}
 
+int testChupa() {
     Workout workout_0   = Workout(0, "Yoga", 90, ANAEROBIC);
     Workout workout_1   = Workout(1, "Pilates", 110, ANAEROBIC);
     Workout workout_2   = Workout(2, "Spinning", 120, MIXED);

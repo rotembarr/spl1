@@ -23,6 +23,7 @@ public:
 private:
     bool open;
     std::vector<Trainer*> trainers;
+    std::vector<Customer*> customers;
     std::vector<Workout> workout_options;
     std::vector<BaseAction*> actionsLog;
 };

@@ -29,16 +29,16 @@ void Trainer::addCustomer(Customer* customer) {
         this->customersList.push_back(customer);
 }
 
-void Trainer::removeCustomer(int id) {
+void Trainer::removeCustomer(int id) { // This function doesnt free customer
     for(size_t i = 0; i < this->customersList.size(); i++){
         if(this->customersList[i]->getId() == id) {
             this->customersList.erase(this->customersList.begin() + i);
-		return;
-	}
+			return;
+		}
     }
 }
 
-Customer* Trainer::getCustomer(int id){
+Customer* Trainer::getCustomer(int id) {
     for (std::vector<Customer*>::size_type i = 0; i < this->customersList.size(); i++) {
 		if (this->customersList[i]->getId() == id) {
 			return this->customersList[i];
@@ -47,9 +47,14 @@ Customer* Trainer::getCustomer(int id){
 
     return nullptr;
 }
-std::vector<Customer*>& Trainer::getCustomers() { return this->customersList; }
 
-std::vector<OrderPair>& Trainer::getOrders() { return this->orderList; }
+std::vector<Customer*>& Trainer::getCustomers() { 
+	return this->customersList; 
+}
+
+std::vector<OrderPair>& Trainer::getOrders() { 
+	return this->orderList; 
+}
 
 void Trainer::order(const int customer_id, const std::vector<int> workout_ids, const std::vector<Workout>& workout_options){
     for(int workout_id : workout_ids){
@@ -59,35 +64,42 @@ void Trainer::order(const int customer_id, const std::vector<int> workout_ids, c
         }
     }
 }
+
 void Trainer::openTrainer() {
 
 	if (this->isOpen()) {
 		std::cout << "Workout session does not exist or is already open" << std::endl;
-	} 
+	}
 
 	this->open = true;
 } 
 
 void Trainer::closeTrainer() {
-	std::string s;
 
 	if (!this->isOpen()) {
-		s = "Trainer does not exist or is not open";
+		std::cout << "Trainer does not exist or is not open" << std::endl;
 	} else {
-		s = "Trainer " + std::to_string(this->id) + " closed. Salary " + std::to_string(this->getSalary()) + "NIS";
+		// Customers go home - they will be delete in the studio.
+		this->customersList.clear()
+
+		// Close terminal.
+		this->open = false;
+		std::cout << "Trainer " + std::to_string(this->id) + " closed. Salary " + std::to_string(this->getSalary()) + "NIS" << std::endl;
 	}
 
-	std::cout << s << std::endl;
-
-	this->open = false;
+	
 }
 
 int Trainer::getSalary() {
     int paycheck = 0;
+
     for(size_t i = 0; i < this->orderList.size(); i++) {
         paycheck += this->orderList[i].second.getPrice();
     }
 
     return paycheck;
 }
-bool Trainer::isOpen() { return this->open; }
+
+bool Trainer::isOpen() { 
+	return this->open; 
+}

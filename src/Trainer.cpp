@@ -80,7 +80,7 @@ void Trainer::closeTrainer() {
 		std::cout << "Trainer does not exist or is not open" << std::endl;
 	} else {
 		// Customers go home - they will be delete in the studio.
-		this->customersList.clear()
+		this->customersList.clear();
 
 		// Close terminal.
 		this->open = false;

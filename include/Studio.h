@@ -19,9 +19,12 @@ public:
     Trainer* getTrainer(int tid);
 	const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
     std::vector<Workout>& getWorkoutOptions();
-
+    bool isOpen();
 private:
+    Customer* createCustomer(std::string type, std::string name. int id) const;
+
     bool open;
+    int customersCounter;
     std::vector<Trainer*> trainers;
     std::vector<Customer*> customers;
     std::vector<Workout> workout_options;

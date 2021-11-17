@@ -28,6 +28,7 @@ private:
     int calcSalary() const;
 
     int capacity;
+    int salary;
     int id;
     bool open;
     std::vector<Customer*> customersList;

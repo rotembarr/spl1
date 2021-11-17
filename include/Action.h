@@ -6,7 +6,7 @@
 #include "Customer.h"
 
 enum ActionStatus{
-    COMPLETED, ERROR
+    COMPLETED, ERROR, RUNNING
 };
 
 //Forward declaration

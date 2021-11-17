@@ -12,6 +12,20 @@ Trainer::Trainer(int t_capacity, int t_id):
 	open(false) {
 }
 
+// Delete all customers.
+void Trainer::delAllCustomers() {
+	while (this->customersList.size() != 0) {
+		Customer* temp = this->customersList.back();
+		this->customersList.pop_back();
+		delete temp;
+	}
+}
+
+// Destructor.
+Trainer::~Trainer() {
+	this->delAllCustomers();
+}
+
 int Trainer::getCapacity() const {
 	return this->capacity;
 }
@@ -29,13 +43,22 @@ void Trainer::addCustomer(Customer* customer) {
         this->customersList.push_back(customer);
 }
 
+// Remove costumer because moving to other trainer.
 void Trainer::removeCustomer(int id) { // This function doesnt free customer
-    for(size_t i = 0; i < this->customersList.size(); i++){
+
+	// TODO
+    for (std::size_t i = 0; i < this->orderList.size(); i++) {
+
+    }
+
+    for(size_t i = 0; i < this->customersList.size(); i++) {
         if(this->customersList[i]->getId() == id) {
             this->customersList.erase(this->customersList.begin() + i);
 			return;
 		}
     }
+
+
 }
 
 Customer* Trainer::getCustomer(int id) {
@@ -59,10 +82,14 @@ std::vector<OrderPair>& Trainer::getOrders() {
 void Trainer::order(const int customer_id, const std::vector<int> workout_ids, const std::vector<Workout>& workout_options){
     for(int workout_id : workout_ids){
         for(Workout wo_option : workout_options){
-            if(wo_option.getId() == workout_id)
+            if(wo_option.getId() == workout_id) {
                 this->orderList.push_back(OrderPair(customer_id, wo_option));
+                this->salary += wo_option.getPrice();
+            }
         }
     }
+
+    // TODO - print
 }
 
 void Trainer::openTrainer() {
@@ -79,8 +106,13 @@ void Trainer::closeTrainer() {
 	if (!this->isOpen()) {
 		std::cout << "Trainer does not exist or is not open" << std::endl;
 	} else {
-		// Customers go home - they will be delete in the studio.
-		this->customersList.clear();
+		// Customers go home - delete them.
+		this->delAllCustomers();
+
+		// TODO - should we delete their orders?
+		while (this->orderList.size() != 0) {
+			this->orderList.pop_back();
+		}
 
 		// Close terminal.
 		this->open = false;
@@ -91,13 +123,7 @@ void Trainer::closeTrainer() {
 }
 
 int Trainer::getSalary() {
-    int paycheck = 0;
-
-    for(size_t i = 0; i < this->orderList.size(); i++) {
-        paycheck += this->orderList[i].second.getPrice();
-    }
-
-    return paycheck;
+    return this->salary;
 }
 
 bool Trainer::isOpen() { 

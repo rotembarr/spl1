@@ -10,13 +10,16 @@ int Customer::getId() const { return this->id; }
 // Sweaty Customer
 SweatyCustomer::SweatyCustomer(std::string name, int id): Customer(name, id){
 }
+
 std::vector<int> SweatyCustomer::order(const std::vector<Workout> &workout_options){
     std::vector<int> id_vector = std::vector<int>();
+
     for(size_t i = 0; i < workout_options.size(); i++){
         if(workout_options[i].getType() == CARDIO){
             id_vector.push_back(workout_options[i].getId());
         }
     }
+
     return id_vector;
 }
 std::string SweatyCustomer::toString() const {
@@ -24,16 +27,18 @@ std::string SweatyCustomer::toString() const {
 }
 
 
-
 //  Cheap Customer
 CheapCustomer::CheapCustomer(std::string name, int id): Customer(name, id){
 }
+
 std::vector<int> CheapCustomer::order(const std::vector<Workout> &workout_options){
     const Workout* cheapest = &workout_options[0];
+
     for(size_t i = 0; i < workout_options.size(); i++){
         if(workout_options[i] < *cheapest)
             cheapest = &workout_options[i];
     }
+
     return {cheapest->getId()};
 }
 
@@ -47,6 +52,7 @@ std::string CheapCustomer::toString() const {
 //  Heavy Muscle Customer
 HeavyMuscleCustomer::HeavyMuscleCustomer(std::string name, int id): Customer(name, id){
 }
+
 std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_options){
     std::vector<const Workout*> anaerobic_workouts = std::vector<const Workout*>();  
     for(size_t i = 0; i < workout_options.size(); i++){
@@ -73,6 +79,7 @@ std::string HeavyMuscleCustomer::toString() const {
 //  Full Body Customer
 FullBodyCustomer::FullBodyCustomer(std::string name, int id): Customer(name, id){
 }
+
 std::vector<int> FullBodyCustomer::order(const std::vector<Workout> &workout_options){
       int chpCardioId = -1;
     int chpCardioPrice = std::numeric_limits<int>::max();

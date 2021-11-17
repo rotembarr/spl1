@@ -5,6 +5,65 @@ Studio::Studio():
 	customersCounter(0) {
 }
 
+void Studio::clear() {
+	while (this->trainers.size() != 0) {
+		Trainer *trainer = this->trainers.back();
+		delete trainer;
+		this->trainers.pop_back();
+	}
+
+	while (this->actionsLog.size() != 0) {
+		BaseAction *action = this->actionsLog.back();
+		delete action;
+		this->actionsLog.pop_back();
+	}	
+}
+
+Studio::~Studio() {
+	this->clear();
+}
+
+Studio::Studio(const Studio &other): 
+	open(other.open),
+	customersCounter(0),
+	workout_options(other.workout_options) {
+
+	for (size_t i = 0; i < other.actionsLog.size(); i++) {
+		this->actionsLog.push_back(actionsLog[i]->clone());
+	}
+
+
+}
+
+// Studio(Studio &&other):
+// 	open(other.open),
+// 	customersCounter(other.customersCounter),
+// 	trainers(other.trainers),
+// 	workout_options(other.workout_options),
+// 	actionsLog(other.actionsLog) {
+
+// 	other.trainers.clear();
+// 	other.workout_options.clear();
+// 	other.actionsLog.clear();
+// }
+
+// Studio& Studio::operator=(Studio &&other) {
+// 	if (this != &other) {
+// 		this->clear();
+// 		this->open = other.open;
+// 		this->customersCounter = other.customersCounter;
+// 		this->trainers = other.trainers;
+// 		this->workout_options = other.workout_options;
+// 		this->actionsLog = other.actionsLog;
+
+// 		other.trainers.clear();
+// 		other.workout_options.clear();
+// 		other.actionsLog.clear();
+// 	}
+
+// 	return (*this);
+// }
+
 Studio::Studio(const std::string &configFilePath) : Studio() {
 	std::ifstream confFile(configFilePath.c_str(), std::ifstream::in);
 	std::string line;
@@ -19,8 +78,6 @@ Studio::Studio(const std::string &configFilePath) : Studio() {
 	while (std::getline(confFile, line) && (line == "" || line[0] == '#')) {	
 	} 
 
-	nOfTrainer = std::stoi(line);
-
 	// Trainers Capacity parsing - create trainers.
 	while (std::getline(confFile, line) && (line == "" || line[0] == '#')) {		
 	}
@@ -29,7 +86,6 @@ Studio::Studio(const std::string &configFilePath) : Studio() {
 	std::istringstream stream(line);
 	for (int i = 0; i < nOfTrainer; ++i) {
 		std::getline(stream, sCap, ',');
-		std::cout << sCap << std::endl;
 		trainers.push_back(new Trainer(std::stoi(sCap), i));
 	}
 
@@ -68,8 +124,11 @@ void Studio::start() {
 		std::istringstream stream(command);
 		std::getline(stream, command, ' ');
 
+		std::cout << command << std::endl;
+		return;
+
 		if (command == "open") {
-			vector<Costumer*> newCustomers;
+			std::vector<Customer*> newCustomers;
 			std::string sTrainerId;
 			std::string sCustomerName;
 			std::string sCustomerStrategy;
@@ -90,78 +149,79 @@ void Studio::start() {
 			// Create action and do it!!
 			this->executeAction(new OpenTrainer(std::stoi(sTrainerId), newCustomers));
 
-		} else if (command.rfind("order"), 0) {
-			std::string sTrainerId;
+		// // Order.
+		// } else if (command.rfind("order"), 0) {
+		// 	std::string sTrainerId;
 
-			// Get trainer id.
-			std::getline(stream, sTrainerId, '');
+		// 	// Get trainer id.
+		// 	std::getline(stream, sTrainerId, ' ');
 
-			// Create action and do it!!
-			this->executeAction(new OpenTrainer(std::stoi(sTrainerId), newCustomers));
+		// 	// Create action and do it!!
+		// 	this->executeAction(new Order(std::stoi(sTrainerId)));
 
-		// MoveCustomer.
-		} else if (command.rfind("move"), 0) {
-			std::string sSourceTrainerId;
-			std::string sDestTrainerId;
-			std::string sCustomerId;
+		// // MoveCustomer.
+		// } else if (command.rfind("move"), 0) {
+		// 	std::string sSourceTrainerId;
+		// 	std::string sDestTrainerId;
+		// 	std::string sCustomerId;
 
-			// Get IDs.
-			std::getline(stream, sSourceTrainerId, ' ');
-			std::getline(stream, sDestTrainerId, ' ');
-			std::getline(stream, sCustomerId, '');
+		// 	// Get IDs.
+		// 	std::getline(stream, sSourceTrainerId, ' ');
+		// 	std::getline(stream, sDestTrainerId, ' ');
+		// 	std::getline(stream, sCustomerId, ' ');
 			
-			// Create action and do it!!
-			this->executeAction(new MoveCustomer(std::stoi(sSourceTrainerId), std::stoi(sDestTrainerId), std::stoi(sCustomerId)));
+		// 	// Create action and do it!!
+		// 	this->executeAction(new MoveCustomer(std::stoi(sSourceTrainerId), std::stoi(sDestTrainerId), std::stoi(sCustomerId)));
 
-		// Close.
-		} else if (command.rfind("close"), 0) {
-			std::string sTrainerId;
+		// // Close.
+		// } else if (command.rfind("close"), 0) {
+		// 	std::string sTrainerId;
 
-			// Get trainer id.
-			std::getline(stream, sTrainerId, '');
+		// 	// Get trainer id.
+		// 	std::getline(stream, sTrainerId, ' ');
 
-			// Create action and do it!!
-			this->executeAction(new Close(std::stoi(sTrainerId)));
+		// 	// Create action and do it!!
+		// 	this->executeAction(new Close(std::stoi(sTrainerId)));
 
-		// CloaseAll.
-		} else if (command.rfind("closeall"), 0) {
+		// // CloaseAll.
+		// } else if (command.rfind("closeall"), 0) {
 
-			// Create action and do it!!
-			this->executeAction(new CloseAll());
+		// 	// Create action and do it!!
+		// 	this->executeAction(new CloseAll());
 
-		// PrintWorkputOptions.
-		} else if (command.rfind("workout_options"), 0) {
+		// // PrintWorkoutOptions.
+		// } else if (command.rfind("workout_options"), 0) {
 
-			// Create action and do it!!
-			this->executeAction(new PrintWorkputOptions());
+		// 	// Create action and do it!!
+		// 	this->executeAction(new PrintWorkoutOptions());
 
-		// PrintTrainerStatus.
-		} else if (command.rfind("status"), 0) {
-			std::string sTrainerId;
+		// // PrintTrainerStatus.
+		// } else if (command.rfind("status"), 0) {
+		// 	std::string sTrainerId;
 
-			// Get trainer id.
-			std::getline(stream, sTrainerId, '');
+		// 	// Get trainer id.
+		// 	std::getline(stream, sTrainerId, ' ');
 
-			// Create action and do it!!
-			this->executeAction(new PrintTrainerStatus(std::stoi(sTrainerId)));
+		// 	// Create action and do it!!
+		// 	this->executeAction(new PrintTrainerStatus(std::stoi(sTrainerId)));
 
-		// PrintActionsLog.
-		} else if (command.rfind("log"), 0) {
+		// // PrintActionsLog.
+		// } else if (command.rfind("log"), 0) {
 
-			// Create action and do it!!
-			this->executeAction(new PrintActionsLog());
+		// 	// Create action and do it!!
+		// 	this->executeAction(new PrintActionsLog());
 		
-		// BackupStudio.
-		} else if (command.rfind("backup"), 0) {
+		// // BackupStudio.
+		// } else if (command.rfind("backup"), 0) {
 
-			// Create action and do it!!
-			this->executeAction(new BackupStudio());
+		// 	// Create action and do it!!
+		// 	this->executeAction(new BackupStudio());
 		
-		// RestoreStudio.
-		} else if (command.rfind("restore"), 0) {
+		// // RestoreStudio.
+		// } else if (command.rfind("restore"), 0) {
 
-			// Create action and do it!!
-			this->executeAction(new RestoreStudio());
+		// 	// Create action and do it!!
+		// 	this->executeAction(new RestoreStudio());
 
 		} else {
 			std::cout << "No such command -" + command << std::endl;
@@ -194,7 +254,7 @@ std::vector<Workout>& Studio::getWorkoutOptions() {
 }
 
 
-Customer* Studio::createCustomer(std::string type, std::string name, int id) {
+Customer* Studio::createCustomer(std::string type, std::string name, int id) const {
 	if (type == "swt") {
 		return new SweatyCustomer(name, id);
 	} else if (type == "chp") {
@@ -209,11 +269,10 @@ Customer* Studio::createCustomer(std::string type, std::string name, int id) {
 	}
 }
 
-bool Studio::executeAction(BaseAction* action) {
-	action.act((*this));
-	if (action.getStatus() == Action::ERROR) {
-		std::cout << action.getErrorMsg() << std::endl;
-	}
+void Studio::executeAction(BaseAction* action) {
+	
+	action->act(*this);
+	std::cout << action->toString() << std::endl;
 
 	// End of action.
 	this->actionsLog.push_back(action);

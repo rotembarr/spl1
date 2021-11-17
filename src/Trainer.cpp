@@ -50,16 +50,18 @@ void Trainer::removeCustomer(int id) { // This function doesnt free customer
 	//	Remove customer from customerList
     for(size_t i = this->customersList.size() - 1; i >= 0 ; i--){
         if(this->customersList[i]->getId() == this->id) {
-            this->customersList.erase(this->customersList.begin() + i);
+            this->customersList[i] = nullptr;
 		}
     }
 
 	//	Remove customer order from orderList
+	std::vector<OrderPair> orderListFiltered = std::vector<OrderPair>();
 	for(size_t i = this->orderList.size() - 1; i >= 0; i--){
-		if(this->orderList[i].first == this->id){
-			this->orderList.erase(this->orderList.begin() + i);
+		if(this->orderList[i].first != this->id){
+			orderListFiltered.push_back(this->orderList[i]);
 		}
 	}
+	this->orderList = std::vector<OrderPair>(orderListFiltered);
 }
 
 Customer* Trainer::getCustomer(int id) {

@@ -7,9 +7,6 @@
 #include <algorithm>
 #include "../include/Workout.h"
 
-typedef std::pair<int, int> idAndPrice;
-
-
 class Customer{
 public:
     Customer(std::string c_name, int c_id);

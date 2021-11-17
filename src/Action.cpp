@@ -219,9 +219,7 @@ std::string PrintWorkoutOptions::toString() const{
 //  Print trainer status
 PrintTrainerStatus::PrintTrainerStatus(int id): trainerId(id){}
 void PrintTrainerStatus::act(Studio &studio){
-    Trainer* trainer_p = studio.getTrainer(this->trainerId);
-    std::vector<Customer*> customerList;
-    std::vector<OrderPair> orderList;
+    Trainer* trainer_p = studio.getTrainer(this->trainerId);    
 
     if(trainer_p == nullptr){
         this->error("Trainer does not exist");
@@ -231,8 +229,8 @@ void PrintTrainerStatus::act(Studio &studio){
     cout << "Trainer " + std::to_string(trainer_p->getId()) + " status: " + (trainer_p->isOpen()?"Open":"Closed") << endl;
     cout << "Customers:" << endl;
 
-    customerList = trainer_p->getCustomers();
-    orderList = trainer_p->getOrders();
+    std::vector<Customer*> customerList = trainer_p->getCustomers();
+    std::vector<OrderPair>& orderList = trainer_p->getOrders();
     for(size_t i = 0; i < customerList.size(); i++){
         cout << customerList[i]->toString() << endl;
     }    

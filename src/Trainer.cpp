@@ -2,15 +2,15 @@
 
 Trainer::Trainer(int t_capacity): 
 	capacity(t_capacity),
-	id(0),
 	salary(0),
+	id(0),
 	open(false) {
 }
 
 Trainer::Trainer(int t_capacity, int t_id): 
 	capacity(t_capacity),
-	id(t_id),
 	salary(0),
+	id(t_id),
 	open(false) {
 }
 
@@ -33,16 +33,15 @@ void Trainer::addCustomer(Customer* customer) {
 
 void Trainer::removeCustomer(int id) { // This function doesnt free customer
 	//	Remove customer from customerList
-    for(size_t i = 0; i < this->customersList.size(); i++){
-        if(this->customersList[i]->getId() == id) {
+    for(size_t i = this->customersList.size() - 1; i >= 0 ; i--){
+        if(this->customersList[i]->getId() == this->id) {
             this->customersList.erase(this->customersList.begin() + i);
-			return;
 		}
     }
 
-	//	Remove customers orders from orderList
-	for(size_t i = this->orderList.size()-1; i >= 0 ; i--){
-		if(this->orderList[i].first == id){
+	//	Remove customer order from orderList
+	for(size_t i = this->orderList.size() - 1; i >= 0; i--){
+		if(this->orderList[i].first == this->id){
 			this->orderList.erase(this->orderList.begin() + i);
 		}
 	}
@@ -90,7 +89,7 @@ void Trainer::closeTrainer() {
 		std::cout << "Trainer does not exist or is not open" << std::endl;
 	} else {
 		//	Accumulate paycheck
-
+		this->salary += this->calcSalary();
 
 		// Customers go home - they will be delete in the studio.
 		this->customersList.clear();
@@ -104,8 +103,8 @@ void Trainer::closeTrainer() {
 	
 }
 
-int Trainer::getSalary() {
-    int paycheck = 0;
+int Trainer::calcSalary() const {
+	int paycheck = 0;
 
     for(size_t i = 0; i < this->orderList.size(); i++) {
         paycheck += this->orderList[i].second.getPrice();
@@ -114,6 +113,21 @@ int Trainer::getSalary() {
     return paycheck;
 }
 
+int Trainer::getSalary() {
+    return this->salary;
+}
+
 bool Trainer::isOpen() { 
 	return this->open; 
+}
+
+bool Trainer::operator<(const Trainer &b) const{
+	if(this->getId() < b.getId())
+		return true;
+	return false;
+}
+bool Trainer::operator>(const Trainer &b) const{
+	if(this->getId() > b.getId())
+		return true;
+	return false;
 }

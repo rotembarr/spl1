@@ -24,6 +24,9 @@ public:
     int getSalary();
     bool isOpen();
     std::string toString() const;
+    bool operator<(const Trainer &b) const;
+    bool operator>(const Trainer &b) const;
+
 private:
     int calcSalary() const;
 

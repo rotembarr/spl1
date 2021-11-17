@@ -1,11 +1,14 @@
 #include "Action.h"
 #include "Studio.h"
 
+using namespace std;
+
+Studio studio_backup;
+
 //  Base Action
 
 BaseAction::BaseAction(){
     this->errorMsg = "";
-    this->status = RUNNING;
 }
 ActionStatus BaseAction::getStatus() const {
     return this->status;
@@ -26,12 +29,36 @@ std::string BaseAction::getErrorMsg() const{
 OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList): trainerId(id), customers(customersList) {}
 void OpenTrainer::act(Studio &studio){
     Trainer* trainer = studio.getTrainer(this->trainerId);
-    for(int i = 0; i < this->customers.size(); i++){
+
+    if(trainer == nullptr){
+        this->error("Workout session does not exist or is already open");
+        return;
+    }
+
+    if(trainer->isOpen()){
+        this->error("Workout session does not exist or is already open");
+        return;
+    }
+
+    for(size_t i = 0; i < this->customers.size(); i++){
         trainer->addCustomer(this->customers[i]);
     }
+
+    trainer->openTrainer();
 }
 std::string OpenTrainer::toString() const{
-    return "open " + std::to_string(this->trainerId);
+    string result = "";
+    result += "open " + to_string(this->trainerId) + " ";
+    for(size_t i = 0; i < this->customers.size(); i++){
+        result += this->customers[i]->getName() + "," + this->customers[i]->customer_type();
+    }
+    result += " ";
+    if(this->getStatus() == COMPLETED){
+        result += "Completed";
+    } else {
+        result += this->getErrorMsg();
+    }
+    return result;
 }
 
 
@@ -54,13 +81,20 @@ void Order::act(Studio &studio){
 
     //  Start the trainers order
     std::vector<Customer*> customer_list = trainer->getCustomers();
-    for(int i = 0; i < customer_list.size(); i++){
+    for(size_t i = 0; i < customer_list.size(); i++){
         trainer->order(customer_list[i]->getId(), customer_list[i]->order(studio.getWorkoutOptions()), studio.getWorkoutOptions());
     }
     this->complete();
 }
 std::string Order::toString() const{
-    return "order " + this->trainerId;
+    string result = "";
+    result += "order " + to_string(this->trainerId) + " ";
+    if(this->getStatus() == COMPLETED){
+        result += "Completed";
+    } else {
+        result += this->getErrorMsg();
+    }
+    return result;
 }
 
 //  Move customer
@@ -74,13 +108,13 @@ void MoveCustomer::act(Studio &studio){
 
 
     //  No trainer / customer exists
-    if(srcTrainer_p == nullptr | dstTrainer_p == nullptr | customer_p == nullptr){
+    if((srcTrainer_p == nullptr) | (dstTrainer_p == nullptr) | (customer_p == nullptr)){
         this->error("Cannot move costumer");
         return;
     }
 
     //  Either trainer is closed
-    if(!srcTrainer_p->isOpen() | !dstTrainer_p->isOpen()){
+    if((!srcTrainer_p->isOpen()) | (!dstTrainer_p->isOpen())){
         this->error("Cannot move costumer");
         return;
     }
@@ -113,7 +147,14 @@ void MoveCustomer::act(Studio &studio){
     this->complete();
 }
 std::string MoveCustomer::toString() const{
-
+    string result = "";
+    result += "move " + to_string(this->srcTrainer) + " " + to_string(this->dstTrainer) + " " + to_string(this->id) + " ";
+    if(this->getStatus() == COMPLETED){
+        result += "Completed";
+    } else {
+        result += this->getErrorMsg();
+    }
+    return result;
 }
 
 //  Close trainer
@@ -121,13 +162,118 @@ Close::Close(int id): trainerId(id){}
 void Close::act(Studio &studio){
     Trainer* trainer_p = studio.getTrainer(this->trainerId);
 
+    if(trainer_p == nullptr){
+        this->error("Trainer does not exist or is not open.");
+        return;
+    }
+
+    if(!trainer_p->isOpen()){
+        this->error("Trainer does not exist or is not open.");
+        return;
+    }
+
     trainer_p->closeTrainer();
-
-
-
+    this->complete();
 }
 std::string Close::toString() const{
+    string result = "";
+    result += "close " + to_string(this->trainerId) + " ";
+    if(this->getStatus() == COMPLETED){
+        result += "Completed";
+    } else {
+        result += this->getErrorMsg();
+    }
+    return result;
+}
 
+//  Close all trainer
+CloseAll::CloseAll(){}
+void CloseAll::act(Studio &studio){
+    std::vector<Trainer*> trainers_list = studio.getTrainers();
+    //  We need to close the trainers in sequence from lowest id to highest id.
+    std::sort(trainers_list.begin(), trainers_list.end());
+    for(size_t i = 0; i < trainers_list.size(); i++){
+        if(trainers_list[i]->isOpen())
+            trainers_list[i]->closeTrainer();
+    }
+    this->complete();
+}
+std::string CloseAll::toString() const {
+    return "closeall Completed";
+}
+
+
+//  Print workout options
+PrintWorkoutOptions::PrintWorkoutOptions(){}
+void PrintWorkoutOptions::act(Studio &studio){
+    std::vector<Workout> workout_opts = studio.getWorkoutOptions();
+    for(size_t i = 0; i < workout_opts.size(); i++){
+        cout << workout_opts[i].toString() << endl;
+    }
+}
+std::string PrintWorkoutOptions::toString() const{
+    return "workout_options Completed";
+};
+
+
+//  Print trainer status
+PrintTrainerStatus::PrintTrainerStatus(int id): trainerId(id){}
+void PrintTrainerStatus::act(Studio &studio){
+    Trainer* trainer_p = studio.getTrainer(this->trainerId);
+    std::vector<Customer*> customerList;
+    std::vector<OrderPair> orderList;
+
+    if(trainer_p == nullptr){
+        this->error("Trainer does not exist");
+        return;
+    }
+
+    cout << "Trainer " + std::to_string(trainer_p->getId()) + " status: " + (trainer_p->isOpen()?"Open":"Closed") << endl;
+    cout << "Customers:" << endl;
+
+    customerList = trainer_p->getCustomers();
+    orderList = trainer_p->getOrders();
+    for(size_t i = 0; i < customerList.size(); i++){
+        cout << customerList[i]->toString() << endl;
+    }    
+    for(size_t i = 0; i < orderList.size(); i++){
+        cout << orderList[i].second.getName() + " " + std::to_string(orderList[i].second.getPrice()) + " " + std::to_string(orderList[i].first) << endl;
+    }
+
+}
+std::string PrintTrainerStatus::toString() const{
+    string result = "";
+    result += "status " + to_string(this->trainerId);
+    if(this->getStatus() == COMPLETED){
+        result += "Completed";
+    } else {
+        result += this->getErrorMsg();
+    }
+    return result;
+}
+
+
+//  Print action log
+PrintActionsLog::PrintActionsLog(){}
+void PrintActionsLog::act(Studio &studio){
+    std::vector<BaseAction*> actionLog = studio.getActionsLog();
+    for(size_t i = 0; i < actionLog.size(); i++){
+        cout << actionLog[i]->toString() << endl;
+    }
+    this->complete();
+}
+std::string PrintActionsLog::toString() const{
+    return "log Completed";
+}
+
+//  Backup studio
+BackupStudio::BackupStudio(){}
+void BackupStudio::act(Studio &studio){
+    studio_backup = Studio(studio);
+    this->complete();
+}
+std::string BackupStudio::toString() const{
+    return "backup Completed";
 }
 
 

@@ -253,6 +253,9 @@ std::vector<Workout>& Studio::getWorkoutOptions() {
 	return this->workout_options;
 }
 
+std::vector<Trainer*> Studio::getTrainers() const {
+	return this->trainers;
+}
 
 Customer* Studio::createCustomer(std::string type, std::string name, int id) const {
 	if (type == "swt") {

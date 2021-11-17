@@ -70,8 +70,8 @@ int testChupa() {
     cout << endl << "Customers 1:" << endl;
     for(Customer* customer : customers){ cout << customer->toString() << endl; }
     cout << endl;
-    trainer.removeCustomer(4);
-    trainer.removeCustomer(5);
+    // trainer.removeCustomer(4);
+    // trainer.removeCustomer(5);
     customers = trainer.getCustomers();
     cout << "Remove(5):" << endl;
     for(Customer* customer : customers){ cout << customer->toString() << endl; }

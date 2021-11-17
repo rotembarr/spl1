@@ -3,12 +3,14 @@
 Trainer::Trainer(int t_capacity): 
 	capacity(t_capacity),
 	id(0),
+	salary(0),
 	open(false) {
 }
 
 Trainer::Trainer(int t_capacity, int t_id): 
 	capacity(t_capacity),
 	id(t_id),
+	salary(0),
 	open(false) {
 }
 
@@ -45,20 +47,20 @@ void Trainer::addCustomer(Customer* customer) {
 
 // Remove costumer because moving to other trainer.
 void Trainer::removeCustomer(int id) { // This function doesnt free customer
-
-	// TODO
-    for (std::size_t i = 0; i < this->orderList.size(); i++) {
-
-    }
-
-    for(size_t i = 0; i < this->customersList.size(); i++) {
+	//	Remove customer from customerList
+    for(size_t i = 0; i < this->customersList.size(); i++){
         if(this->customersList[i]->getId() == id) {
             this->customersList.erase(this->customersList.begin() + i);
 			return;
 		}
     }
 
-
+	//	Remove customers orders from orderList
+	for(size_t i = this->orderList.size()-1; i >= 0 ; i--){
+		if(this->orderList[i].first == id){
+			this->orderList.erase(this->orderList.begin() + i);
+		}
+	}
 }
 
 Customer* Trainer::getCustomer(int id) {
@@ -106,13 +108,12 @@ void Trainer::closeTrainer() {
 	if (!this->isOpen()) {
 		std::cout << "Trainer does not exist or is not open" << std::endl;
 	} else {
-		// Customers go home - delete them.
-		this->delAllCustomers();
+		//	Accumulate paycheck
 
-		// TODO - should we delete their orders?
-		while (this->orderList.size() != 0) {
-			this->orderList.pop_back();
-		}
+
+		// Customers go home - they will be delete in the studio.
+		this->customersList.clear();
+		this->orderList.clear();
 
 		// Close terminal.
 		this->open = false;

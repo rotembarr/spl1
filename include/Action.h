@@ -7,7 +7,7 @@
 
 
 enum ActionStatus{
-    COMPLETED, ERROR, IN_PROGRESS
+    COMPLETED, ERROR
 };
 
 //Forward declaration

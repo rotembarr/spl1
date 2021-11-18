@@ -11,7 +11,15 @@ class Trainer{
 public:
     Trainer(int t_capacity);
     Trainer(int t_capacity, int t_id);
+
+    // Rule of 5.
+    Trainer(const Trainer& other);
+    Trainer(Trainer&& other);
+    Trainer& operator=(const Trainer& other);
+    Trainer& operator=(Trainer&& other);
     virtual ~Trainer();
+
+    // Functions.
     int getCapacity() const;
     int getId() const;
     void addCustomer(Customer* customer);
@@ -26,7 +34,10 @@ public:
     bool isOpen();
     std::string toString() const;
 protected:
+    void delCustomerOrder(int id);
     void delAllCustomers();
+    void clear();
+    void copy();
 private:
     int capacity;
     int salary;

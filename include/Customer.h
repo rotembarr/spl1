@@ -13,6 +13,8 @@ typedef std::pair<int, int> idAndPrice;
 class Customer{
 public:
     Customer(std::string c_name, int c_id);
+    virtual ~Customer();
+    virtual Customer* clone()=0;
     virtual std::vector<int> order(const std::vector<Workout> &workout_options)=0;
     virtual std::string toString() const = 0;
     std::string getName() const;
@@ -25,6 +27,7 @@ private:
 class SweatyCustomer : public Customer {
 public:
 	SweatyCustomer(std::string name, int id);
+    Customer* clone();
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
 private:
@@ -34,6 +37,7 @@ private:
 class CheapCustomer : public Customer {
 public:
 	CheapCustomer(std::string name, int id);
+    Customer* clone();
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
 private:
@@ -43,6 +47,7 @@ private:
 class HeavyMuscleCustomer : public Customer {
 public:
 	HeavyMuscleCustomer(std::string name, int id);
+    Customer* clone();
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
 private:
@@ -52,6 +57,7 @@ private:
 class FullBodyCustomer : public Customer {
 public:
 	FullBodyCustomer(std::string name, int id);
+    Customer* clone();
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
 private:

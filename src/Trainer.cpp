@@ -12,6 +12,68 @@ Trainer::Trainer(int t_capacity, int t_id):
 	open(false) {
 }
 
+Trainer::Trainer(const Trainer& other): 
+	capacity(other.capacity),
+	id(other.id),
+	open(other.open), 
+	orderList(other.orderList) {
+
+	for (std::size_t i = 0; i < other.customersList.size(); i++) {
+		this->customersList.push_back(other.customersList[i]->clone()); // new
+	}
+
+}
+
+
+Trainer::Trainer(Trainer&& other):
+	capacity(other.capacity),
+	id(other.id),
+	open(other.open),
+	customersList(other.customersList),
+	orderList(other.orderList) {
+
+	other.customersList.clear();
+	other.orderList.clear();
+
+}
+
+// Copy assignment.
+Trainer& Trainer::operator=(const Trainer& other) {
+
+	if (this != &other) {
+		this->clear();
+		this->capacity 	= other.capacity;
+		this->salary 	= other.salary;
+		this->id 		= other.id;
+		this->open 		= other.open;
+
+		for (std::size_t i = 0; i < other.customersList.size(); i++) {
+			this->customersList.push_back(other.customersList[i]->clone()); // new
+		}
+
+		this->orderList = std::vector<OrderPair>(other.orderList);
+	}
+
+	return *this;
+}
+
+Trainer& Trainer::operator=(Trainer&& other) {
+
+	if (this != &other) {
+		this->clear();
+		this->capacity 		= other.capacity;
+		this->id 			= other.id;
+		this->open 			= other.open;
+		this->customersList = other.customersList;
+		this->orderList 	= std::vector<OrderPair>(other.orderList);
+
+		other.customersList.clear();
+		other.orderList.clear();
+	}
+
+	return *this;
+}
+
 // Delete all customers.
 void Trainer::delAllCustomers() {
 	while (this->customersList.size() != 0) {
@@ -21,9 +83,18 @@ void Trainer::delAllCustomers() {
 	}
 }
 
+void Trainer::clear() {
+	this->capacity 	= 0;
+	this->salary 	= 0;
+	this->id 		= 0;
+	this->open 		= 0;
+	this->delAllCustomers();
+	this->orderList.clear();
+}
+
 // Destructor.
 Trainer::~Trainer() {
-	this->delAllCustomers();
+	this->clear();
 }
 
 int Trainer::getCapacity() const {
@@ -35,30 +106,53 @@ int Trainer::getId() const {
 }
 
 void Trainer::addCustomer(Customer* customer) {
+	if (!this->isOpen()) {
+		std::cout << "Int-Error: Add Customer to a close Trainer number " + std::to_string(this->getId()) << std::endl;
+	}
+
 	if (customer == nullptr) {
 		std::cout << "Int-Error: null ptr argument" << std::endl;
 	}
 
-    if(this->customersList.size() < (size_t)this->getCapacity())
+    if(this->customersList.size() < (size_t)this->getCapacity()) {
         this->customersList.push_back(customer);
+    } else {
+		std::cout << "Int-Error: too many customers added to Trainer" + std::to_string(this->getId()) << std::endl;
+    }
 }
 
-// Remove costumer because moving to other trainer.
-void Trainer::removeCustomer(int id) { // This function doesnt free customer
+void Trainer::delCustomerOrder(int id) {
+	std::vector<OrderPair> newOrderList;
 
-	// TODO
-    for (std::size_t i = 0; i < this->orderList.size(); i++) {
+	for (std::size_t i = 0; i < this->orderList.size(); i++) {
+		if (this->orderList[i].first == id) {
+			this->salary -= this->orderList[i].second.getPrice();
+		} else {
+			newOrderList.push_back(this->orderList[i]);
+		}
+	} 
 
-    }
+	this->orderList = std::vector<OrderPair>(newOrderList);
+}
 
+// Remove costumer because moving it to another trainer.
+// ! Dangare: This function doesnt free customer memory
+void Trainer::removeCustomer(int id) { 
+
+	if (!this->isOpen()) {
+		std::cout << "Int-Error: Remove Customer from a close Trainer number " + std::to_string(this->getId()) << std::endl;
+	}
+
+	// Erase all customer's order from oder list.
+	this->delCustomerOrder(id);
+
+	// Delete customer.
     for(size_t i = 0; i < this->customersList.size(); i++) {
         if(this->customersList[i]->getId() == id) {
             this->customersList.erase(this->customersList.begin() + i);
 			return;
 		}
     }
-
-
 }
 
 Customer* Trainer::getCustomer(int id) {
@@ -106,13 +200,8 @@ void Trainer::closeTrainer() {
 	if (!this->isOpen()) {
 		std::cout << "Trainer does not exist or is not open" << std::endl;
 	} else {
-		// Customers go home - delete them.
+		// Customers go home - delete them but keep their workouts.
 		this->delAllCustomers();
-
-		// TODO - should we delete their orders?
-		while (this->orderList.size() != 0) {
-			this->orderList.pop_back();
-		}
 
 		// Close terminal.
 		this->open = false;
@@ -128,4 +217,23 @@ int Trainer::getSalary() {
 
 bool Trainer::isOpen() { 
 	return this->open; 
+}
+
+
+std::string Trainer::toString() const {
+	std::string out;
+
+	out = "Trainer " + std::to_string(this->id) + " status: " + (this->open ? "open" : "closed") + "\n";
+	
+	out += "Customers:\n";
+	for (std::size_t i = 0; i < this->customersList.size(); i++) {
+		out += this->customersList[i]->toString() + "\n";
+	}
+
+	out += "Orders:\n";
+	for (std::size_t i = 0; i < this->orderList.size(); i++) {
+		out += this->orderList[i].second.getName() + " " + std::to_string(this->orderList[i].second.getPrice()) + " " + std::to_string(this->orderList[i].first) + "\n";
+	}
+
+	return out;
 }

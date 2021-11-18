@@ -12,13 +12,15 @@
 
 class Studio{		
 public:
-    // Rule of 5.
 	Studio();
     Studio(const std::string &configFilePath);
-    virtual ~Studio();
+
+    // Rule of 5.
     Studio(const Studio &other);
-    // Studio(Studio &&other);
+    Studio(Studio &&other);
+    Studio& operator=(const Studio &other);
     Studio& operator=(Studio &&other);
+    virtual ~Studio();
 
     // Functianality.
     void start();
@@ -28,7 +30,7 @@ public:
     std::vector<Workout>& getWorkoutOptions();
     bool isOpen();
 protected:
-    Customer* createCustomer(std::string type, std::string name, int id) const;
+    Customer* createCustomer(std::string type, std::string name, int id);
     void executeAction(BaseAction* action);
     void clear();
 private:

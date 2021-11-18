@@ -51,6 +51,7 @@ void OpenTrainer::act(Studio& studio) {
     
     Trainer* trainer = studio.getTrainer(this->trainerId);
 
+    trainer->openTrainer();
     for (std::size_t j = 0; j < this->customers.size(); j++) {
         trainer->addCustomer(this->customers[j]);
     }

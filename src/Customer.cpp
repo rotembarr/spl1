@@ -2,14 +2,32 @@
 
 
 // Customer
-Customer::Customer(std::string c_name, int c_id): name(c_name), id(c_id){}
-std::string Customer::getName() const{ return this->name; }
-int Customer::getId() const { return this->id; }
+Customer::Customer(std::string c_name, int c_id): 
+    name(c_name), 
+    id(c_id) {
+
+}
+
+Customer::~Customer() {} // For warning issues
+
+std::string Customer::getName() const { 
+    return this->name; 
+}
+
+int Customer::getId() const { 
+    return this->id; 
+}
 
 
 // Sweaty Customer
-SweatyCustomer::SweatyCustomer(std::string name, int id): Customer(name, id){
+SweatyCustomer::SweatyCustomer(std::string name, int id): 
+    Customer(name, id) {
 }
+
+Customer* SweatyCustomer::clone() {
+    return new SweatyCustomer(*this);
+}
+
 
 std::vector<int> SweatyCustomer::order(const std::vector<Workout> &workout_options){
     std::vector<int> id_vector = std::vector<int>();
@@ -22,19 +40,30 @@ std::vector<int> SweatyCustomer::order(const std::vector<Workout> &workout_optio
 
     return id_vector;
 }
+
 std::string SweatyCustomer::toString() const {
-    return (this->getId() + " " + this->getName());  
+    return (std::to_string(this->getId()) + " " + this->getName());  
 }
 
 
 //  Cheap Customer
-CheapCustomer::CheapCustomer(std::string name, int id): Customer(name, id){
+CheapCustomer::CheapCustomer(std::string name, int id): 
+    Customer(name, id) {
 }
 
-std::vector<int> CheapCustomer::order(const std::vector<Workout> &workout_options){
-    const Workout* cheapest = &workout_options[0];
+Customer* CheapCustomer::clone() {
+    return new CheapCustomer(*this);
+}
 
-    for(size_t i = 0; i < workout_options.size(); i++){
+std::vector<int> CheapCustomer::order(const std::vector<Workout> &workout_options) {    
+    const Workout* cheapest = nullptr;
+
+    if (workout_options.size() == 0) {
+        return {};
+    }
+
+    cheapest = &workout_options[0];
+    for(size_t i = 1; i < workout_options.size(); i++){
         if(workout_options[i] < *cheapest)
             cheapest = &workout_options[i];
     }
@@ -44,33 +73,42 @@ std::vector<int> CheapCustomer::order(const std::vector<Workout> &workout_option
 
 
 std::string CheapCustomer::toString() const {
-    return (this->getId() + " " + this->getName());
+    return (std::to_string(this->getId()) + " " + this->getName());
 }
 
 
 
 //  Heavy Muscle Customer
-HeavyMuscleCustomer::HeavyMuscleCustomer(std::string name, int id): Customer(name, id){
+HeavyMuscleCustomer::HeavyMuscleCustomer(std::string name, int id): 
+    Customer(name, id) {
+}
+
+
+Customer* HeavyMuscleCustomer::clone() {
+    return new HeavyMuscleCustomer(*this);
 }
 
 std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_options){
     std::vector<const Workout*> anaerobic_workouts = std::vector<const Workout*>();  
+
     for(size_t i = 0; i < workout_options.size(); i++){
         if(workout_options.at(i).getType() == ANAEROBIC){
             anaerobic_workouts.push_back(&workout_options.at(i));
         }
     }
+
     std::sort(anaerobic_workouts.begin(), anaerobic_workouts.end());
     std::vector<int> result = std::vector<int>();
     for(size_t i = 0; i < anaerobic_workouts.size(); i++){
         result.push_back(anaerobic_workouts[i]->getId());
     }
+
     return result;
 }
 
 
 std::string HeavyMuscleCustomer::toString() const {
-    return (this->getId() + " " + this->getName());
+    return (std::to_string(this->getId()) + " " + this->getName());
 }
 
 
@@ -80,8 +118,13 @@ std::string HeavyMuscleCustomer::toString() const {
 FullBodyCustomer::FullBodyCustomer(std::string name, int id): Customer(name, id){
 }
 
+
+Customer* FullBodyCustomer::clone() {
+    return new FullBodyCustomer(*this);
+}
+
 std::vector<int> FullBodyCustomer::order(const std::vector<Workout> &workout_options){
-      int chpCardioId = -1;
+    int chpCardioId = -1;
     int chpCardioPrice = std::numeric_limits<int>::max();
     int expMixId = -1;
     int expMixPrice = std::numeric_limits<int>::min();
@@ -114,5 +157,5 @@ std::vector<int> FullBodyCustomer::order(const std::vector<Workout> &workout_opt
     return ord; 
 }
 std::string FullBodyCustomer::toString() const{
-	return (this->getId() + " " + this->getName());    
+	return (std::to_string(this->getId()) + " " + this->getName());    
 }

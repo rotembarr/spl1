@@ -5,6 +5,56 @@ using namespace std;
 
 Studio* backup = nullptr;
 
+
+int testTrainer() {
+    Trainer* trainer = new Trainer(7, 0);
+    std::vector<Workout> workout_options;
+
+    // Workout options.
+    for (int i = 0; i < 5; i++){
+        workout_options.push_back(Workout(i, "wo"+std::to_string(i), rand() % 100, static_cast<WorkoutType>(rand()%6) ));
+    }
+
+    // Trainer 
+    std::cout << "///////////////////// trainer creatin" << std::endl;
+    trainer->addCustomer(new CheapCustomer("gev", 0));
+    trainer->order(0,{0,2}, workout_options);
+    std::cout << trainer->toString() << std::endl;
+
+    // Copy constructor
+    std::cout << "///////////////////// copy constructor" << std::endl;
+    Trainer *trainer2 = new Trainer(*trainer);
+    std::cout << trainer2->toString() << std::endl;
+    trainer2->removeCustomer(0);
+    std::cout << trainer->toString() << std::endl;
+    std::cout << trainer2->toString() << std::endl;
+
+    // Move constructor.
+    std::cout << "///////////////////// move constructor" << std::endl;
+    Trainer *trainer3 = new Trainer(std::move(*trainer));
+    std::cout << trainer3->toString() << std::endl;
+    std::cout << trainer->toString() << std::endl;
+
+    // copy assignment.
+    std::cout << "///////////////////// copy assignment" << std::endl;
+    Trainer trainer4(6);
+    trainer4 = (*trainer3);
+    trainer3->removeCustomer(0);
+    std::cout << trainer3->toString() << std::endl;
+    std::cout << trainer4.toString() << std::endl;
+
+    // Move assignment operator
+    std::cout << "///////////////////// move assignent" << std::endl;
+    Trainer trainer5(8);
+    trainer5 = std::move(trainer4);
+    std::cout << trainer4.toString() << std::endl;
+    std::cout << trainer5.toString() << std::endl;
+
+
+    return 0;
+}
+
+
 int main(int argc, char** argv){
     if(argc!=2){
         std::cout << "usage: studio <config_path>" << std::endl;
@@ -19,6 +69,8 @@ int main(int argc, char** argv){
     }
     return 0;
 }
+
+
 
 int testChupa() {
     Workout workout_0   = Workout(0, "Yoga", 90, ANAEROBIC);

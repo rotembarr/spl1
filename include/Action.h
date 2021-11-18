@@ -41,7 +41,7 @@ public:
     BaseAction* clone() const;
 private:
 	const int trainerId;
-	std::vector<Customer *> customers;
+	std::vector<Customer*> customers;
 };
 
 

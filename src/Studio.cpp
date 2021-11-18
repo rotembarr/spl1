@@ -43,8 +43,7 @@ Studio::Studio(const std::string &configFilePath) : Studio() {
 		std::getline(stream, name, ',');
 		std::getline(stream, type, ',');
 		std::getline(stream, price, ',');
-		Workout wo(id, name, std::stoi(price), Workout::strToType(type));
-		workout_options.push_back(wo); // TODO
+		workout_options.push_back(Workout(id, name, std::stoi(price), Workout::strToType(type))); 
 		id++;
 	}
 

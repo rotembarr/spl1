@@ -182,8 +182,6 @@ void Trainer::order(const int customer_id, const std::vector<int> workout_ids, c
             }
         }
     }
-
-    // TODO - print
 }
 
 void Trainer::openTrainer() {
@@ -205,7 +203,7 @@ void Trainer::closeTrainer() {
 
 		// Close terminal.
 		this->open = false;
-		std::cout << "Trainer " + std::to_string(this->id) + " closed. Salary " + std::to_string(this->getSalary()) + "NIS" << std::endl;
+		// TODO std::cout << "Trainer " + std::to_string(this->id) + " closed. Salary " + std::to_string(this->getSalary()) + "NIS" << std::endl;
 	}
 
 	
@@ -225,15 +223,19 @@ std::string Trainer::toString() const {
 
 	out = "Trainer " + std::to_string(this->id) + " status: " + (this->open ? "open" : "closed") + "\n";
 	
-	out += "Customers:\n";
-	for (std::size_t i = 0; i < this->customersList.size(); i++) {
-		out += this->customersList[i]->toString() + "\n";
-	}
+	if (this->isOpen) {
+		out += "Customers:\n";
+		for (std::size_t i = 0; i < this->customersList.size(); i++) {
+			out += this->customersList[i]->toString() + "\n";
+		}
 
-	out += "Orders:\n";
-	for (std::size_t i = 0; i < this->orderList.size(); i++) {
-		out += this->orderList[i].second.getName() + " " + std::to_string(this->orderList[i].second.getPrice()) + " " + std::to_string(this->orderList[i].first) + "\n";
-	}
+		out += "Orders:\n";
+		for (std::size_t i = 0; i < this->orderList.size(); i++) {
+			out += this->orderList[i].second.getName() + " " + std::to_string(this->orderList[i].second.getPrice()) + "NIS " + std::to_string(this->orderList[i].first) + "\n";
+		}
 
+		out += this->getSalary();
+	}
+	
 	return out;
 }

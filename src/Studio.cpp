@@ -28,10 +28,11 @@ Studio::Studio(const Studio &other):
 	customersCounter(0),
 	workout_options(other.workout_options) {
 
-	for (size_t i = 0; i < other.actionsLog.size(); i++) {
-		this->actionsLog.push_back(actionsLog[i]->clone());
-	}
-
+	this->actionsLog = std::vector<BaseAction*>(other.getActionsLog());
+	//	Todo:
+	//	Deep copy Trainers
+	//	Deep copy customers.
+	//	Update baseAction (in case its OpenTrainer) sub-object customers to point to newly copied customers.
 
 }
 

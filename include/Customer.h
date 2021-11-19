@@ -13,6 +13,7 @@ public:
     virtual std::vector<int> order(const std::vector<Workout> &workout_options)=0;
     virtual std::string toString() const = 0;
     virtual const std::string customer_type() = 0;
+    virtual Customer clone() = 0;
     std::string getName() const;
     int getId() const;
 private:

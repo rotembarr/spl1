@@ -26,7 +26,9 @@ std::string BaseAction::getErrorMsg() const{
 
 
 //  Open Trainer
-OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList): trainerId(id), customers(customersList) {}
+OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList): trainerId(id), customers(customersList) {
+    this->_customers = std::vector<Customer>();
+}
 void OpenTrainer::act(Studio &studio){
     Trainer* trainer = studio.getTrainer(this->trainerId);
 
@@ -42,6 +44,7 @@ void OpenTrainer::act(Studio &studio){
 
     for(size_t i = 0; i < this->customers.size(); i++){
         trainer->addCustomer(this->customers[i]);
+        this->_customers.push_back(*(this->customers[i]));
     }
 
     trainer->openTrainer();

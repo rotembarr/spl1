@@ -30,6 +30,8 @@ public:
 protected:
     void delAllCustomers();
 private:
+    int calcSalary() const;
+
     int capacity;
     int salary;
     int id;

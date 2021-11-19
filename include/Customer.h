@@ -7,9 +7,6 @@
 #include <algorithm>
 #include "../include/Workout.h"
 
-typedef std::pair<int, int> idAndPrice;
-
-
 class Customer{
 public:
     Customer(std::string c_name, int c_id);
@@ -17,6 +14,8 @@ public:
     virtual Customer* clone()=0;
     virtual std::vector<int> order(const std::vector<Workout> &workout_options)=0;
     virtual std::string toString() const = 0;
+    virtual const std::string customer_type() = 0;
+    virtual Customer clone() = 0;
     std::string getName() const;
     int getId() const;
 private:
@@ -30,6 +29,7 @@ public:
     Customer* clone();
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
+    const std::string customer_type();
 private:
 };
 
@@ -40,6 +40,7 @@ public:
     Customer* clone();
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
+    const std::string customer_type();
 private:
 };
 
@@ -50,6 +51,7 @@ public:
     Customer* clone();
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
+    const std::string customer_type();
 private:
 };
 
@@ -60,6 +62,7 @@ public:
     Customer* clone();
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
+    const std::string customer_type();
 private:
 };
 

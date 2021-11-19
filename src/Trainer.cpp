@@ -2,12 +2,14 @@
 
 Trainer::Trainer(int t_capacity): 
 	capacity(t_capacity),
+	salary(0),
 	id(0),
 	open(false) {
 }
 
 Trainer::Trainer(int t_capacity, int t_id): 
 	capacity(t_capacity),
+	salary(0),
 	id(t_id),
 	open(false) {
 }

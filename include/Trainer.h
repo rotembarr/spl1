@@ -33,12 +33,16 @@ public:
     int getSalary();
     bool isOpen();
     std::string toString() const;
+    bool operator<(const Trainer &b) const;
+    bool operator>(const Trainer &b) const;
 protected:
     void delCustomerOrder(int id);
     void delAllCustomers();
     void clear();
     void copy();
 private:
+    int calcSalary() const;
+
     int capacity;
     int salary;
     int id;

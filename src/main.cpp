@@ -1,7 +1,7 @@
 #include "Studio.h"
 #include <iostream>
 
-using namespace std;
+// using namespace std;
 
 Studio* backup = nullptr;
 
@@ -54,13 +54,17 @@ int testTrainer() {
     return 0;
 }
 
+int testWorkout() {
+    return 0;
+}
 
 int main(int argc, char** argv){
+
     if(argc!=2){
         std::cout << "usage: studio <config_path>" << std::endl;
         return 0;
     }
-    string configurationFile = argv[1];
+    std::string configurationFile = argv[1];
     Studio studio(configurationFile);
     studio.start();
     if(backup!=nullptr){
@@ -100,15 +104,15 @@ int testChupa() {
     fbc3.order(workout_options);
     fbc4.order(workout_options);
 
-    cout << "swt: " << swt.toString() << endl;
-    cout << "chp: " << chp.toString() << endl;
-    cout << "hmc: " << hmc.toString() << endl;
-    cout << "fbc: " << fbc.toString() << endl;
+    std::cout << "swt: " << swt.toString() << std::endl;
+    std::cout << "chp: " << chp.toString() << std::endl;
+    std::cout << "hmc: " << hmc.toString() << std::endl;
+    std::cout << "fbc: " << fbc.toString() << std::endl;
 
-    cout << endl << endl << "Trainer tests" << endl;
+    std::cout << std::endl << std::endl << "Trainer tests" << std::endl;
 
     Trainer trainer = Trainer(6);
-    cout << trainer.getCapacity() << endl;
+    std::cout << trainer.getCapacity() << std::endl;
     trainer.addCustomer(&swt);
     trainer.addCustomer(&chp);
     trainer.addCustomer(&hmc);
@@ -119,34 +123,34 @@ int testChupa() {
     std::vector<Customer*> customers = trainer.getCustomers();
 
     //  Test 1:
-    cout << endl << "Customers 1:" << endl;
-    for(Customer* customer : customers){ cout << customer->toString() << endl; }
-    cout << endl;
+    std::cout << std::endl << "Customers 1:" << std::endl;
+    for(Customer* customer : customers){ std::cout << customer->toString() << std::endl; }
+    std::cout << std::endl;
     trainer.removeCustomer(4);
     trainer.removeCustomer(5);
     customers = trainer.getCustomers();
-    cout << "Remove(5):" << endl;
-    for(Customer* customer : customers){ cout << customer->toString() << endl; }
-    cout << endl;
-    cout << "Get 2:" << endl;
-    cout << trainer.getCustomer(2)->getName() << "(" << trainer.getCustomer(2)->getId() << ")" << endl;
+    std::cout << "Remove(5):" << std::endl;
+    for(Customer* customer : customers){ std::cout << customer->toString() << std::endl; }
+    std::cout << std::endl;
+    std::cout << "Get 2:" << std::endl;
+    std::cout << trainer.getCustomer(2)->getName() << "(" << trainer.getCustomer(2)->getId() << ")" << std::endl;
 
 
-    cout << endl;
-    cout << "Order 0:" << endl;
+    std::cout << std::endl;
+    std::cout << "Order 0:" << std::endl;
     for(size_t i = 0; i < trainer.getCustomers().size(); i++){
         std::vector<int> customer_order = trainer.getCustomer(i)->order(workout_options);
         trainer.order(i, customer_order, workout_options);
     }
     for(OrderPair order_pair : trainer.getOrders()){
-        cout << "(" + std::to_string(order_pair.first) + "): " + order_pair.second.getName(); 
+        std::cout << "(" + std::to_string(order_pair.first) + "): " + order_pair.second.getName(); 
     }
     //trainer.order
     trainer.openTrainer();
-    cout << trainer.isOpen() << endl;
+    std::cout << trainer.isOpen() << std::endl;
     trainer.closeTrainer();
-    cout << trainer.isOpen() << endl;
-    cout << trainer.getSalary() << endl;
+    std::cout << trainer.isOpen() << std::endl;
+    std::cout << trainer.getSalary() << std::endl;
 
     return 0;
 }

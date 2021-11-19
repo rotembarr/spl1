@@ -223,7 +223,7 @@ std::string Trainer::toString() const {
 
 	out = "Trainer " + std::to_string(this->id) + " status: " + (this->open ? "open" : "closed") + "\n";
 	
-	if (this->isOpen) {
+	if (this->open) {
 		out += "Customers:\n";
 		for (std::size_t i = 0; i < this->customersList.size(); i++) {
 			out += this->customersList[i]->toString() + "\n";
@@ -234,7 +234,7 @@ std::string Trainer::toString() const {
 			out += this->orderList[i].second.getName() + " " + std::to_string(this->orderList[i].second.getPrice()) + "NIS " + std::to_string(this->orderList[i].first) + "\n";
 		}
 
-		out += this->getSalary();
+		// out += this->getSalary(); TODO	
 	}
 	
 	return out;

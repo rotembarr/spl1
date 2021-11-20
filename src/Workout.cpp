@@ -63,13 +63,13 @@ std::string Workout::typeToString(WorkoutType type) {
 }
 
 WorkoutType Workout::strToType(std::string &str) {
-    if (str == "Anaerobic") {
+    if (str.compare("Anaerobic") == 0) {
         return ANAEROBIC;
     }
-    else if (str == "Mixed") {
+    else if (str.compare("Mixed") == 0) {
         return MIXED;
     }
-    else if (str == "Cardio") {
+    else if (str.compare("Cardio") == 0) {
         return CARDIO;
     }
     else {

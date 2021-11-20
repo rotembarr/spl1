@@ -16,12 +16,17 @@ Trainer::Trainer(int t_capacity, int t_id):
 
 Trainer::Trainer(const Trainer& other): 
 	capacity(other.capacity),
+	salary(other.salary),
 	id(other.id),
 	open(other.open), 
 	orderList(other.orderList) {
 
+	for (std::size_t i = 0; i < other.oldCustomers.size(); i++) {
+		this->oldCustomers.push_back(other.oldCustomers[i]); // new
+	}
+
 	for (std::size_t i = 0; i < other.customersList.size(); i++) {
-		this->customersList.push_back(other.customersList[i]->clone()); // new
+		this->customersList.push_back(other.customersList[i]); // new
 	}
 
 }
@@ -29,11 +34,14 @@ Trainer::Trainer(const Trainer& other):
 
 Trainer::Trainer(Trainer&& other):
 	capacity(other.capacity),
+	salary(other.salary),
 	id(other.id),
 	open(other.open),
+	oldCustomers(other.oldCustomers),
 	customersList(other.customersList),
 	orderList(other.orderList) {
 
+	other.oldCustomers.clear();
 	other.customersList.clear();
 	other.orderList.clear();
 
@@ -49,8 +57,12 @@ Trainer& Trainer::operator=(const Trainer& other) {
 		this->id 		= other.id;
 		this->open 		= other.open;
 
+		for (std::size_t i = 0; i < other.oldCustomers.size(); i++) {
+			this->oldCustomers.push_back(other.oldCustomers[i]); // new
+		}
+
 		for (std::size_t i = 0; i < other.customersList.size(); i++) {
-			this->customersList.push_back(other.customersList[i]->clone()); // new
+			this->customersList.push_back(other.customersList[i]); // new
 		}
 
 		this->orderList = std::vector<OrderPair>(other.orderList);
@@ -65,10 +77,13 @@ Trainer& Trainer::operator=(Trainer&& other) {
 		this->clear();
 		this->capacity 		= other.capacity;
 		this->id 			= other.id;
+		this->salary 		= other.salary;
 		this->open 			= other.open;
+		this->oldCustomers  = other.oldCustomers;
 		this->customersList = other.customersList;
 		this->orderList 	= std::vector<OrderPair>(other.orderList);
 
+		other.oldCustomers.clear();
 		other.customersList.clear();
 		other.orderList.clear();
 	}
@@ -76,21 +91,24 @@ Trainer& Trainer::operator=(Trainer&& other) {
 	return *this;
 }
 
-// Delete all customers.
-void Trainer::delAllCustomers() {
+void Trainer::clear() {
+	this->capacity 	= 0;
+	this->salary 	= 0;
+	this->id 		= 0;
+	this->open 		= false;
+
+	// Delete all customers.
+	while (this->oldCustomers.size() != 0) {
+		Customer* temp = this->oldCustomers.back();
+		this->oldCustomers.pop_back();
+		delete temp;
+	}
 	while (this->customersList.size() != 0) {
 		Customer* temp = this->customersList.back();
 		this->customersList.pop_back();
 		delete temp;
 	}
-}
 
-void Trainer::clear() {
-	this->capacity 	= 0;
-	this->salary 	= 0;
-	this->id 		= 0;
-	this->open 		= 0;
-	this->delAllCustomers();
 	this->orderList.clear();
 }
 
@@ -123,7 +141,7 @@ void Trainer::addCustomer(Customer* customer) {
     }
 }
 
-void Trainer::delCustomerOrder(int id) {
+void Trainer::delCustomerOrders(int id) {
 	std::vector<OrderPair> newOrderList;
 
 	for (std::size_t i = 0; i < this->orderList.size(); i++) {
@@ -146,7 +164,7 @@ void Trainer::removeCustomer(int id) {
 	}
 
 	// Erase all customer's order from oder list.
-	this->delCustomerOrder(id);
+	this->delCustomerOrders(id);
 
 	// Delete customer.
     for(size_t i = 0; i < this->customersList.size(); i++) {
@@ -176,11 +194,25 @@ std::vector<OrderPair>& Trainer::getOrders() {
 }
 
 void Trainer::order(const int customer_id, const std::vector<int> workout_ids, const std::vector<Workout>& workout_options){
-    for(int workout_id : workout_ids){
-        for(Workout wo_option : workout_options){
-            if(wo_option.getId() == workout_id) {
-                this->orderList.push_back(OrderPair(customer_id, wo_option));
-                this->salary += wo_option.getPrice();
+	std::vector<int> cOrders;
+	Customer *customer = this->getCustomer(customer_id);
+
+	// Get customer.
+	if (customer == nullptr) {
+		std::cout << "int-Error: bad id (" + std::to_string(customer_id) + ") to trainer->order" << std::endl;
+		return;
+	}
+
+
+	// order customer.
+	cOrders = customer->order(workout_options);
+
+    for(int ord : cOrders){
+        for(Workout wo : workout_options){
+            if(wo.getId() == ord) {
+                std::cout << customer->getName() + " Is Doing " + wo.getName() << std::endl;
+                this->orderList.push_back(OrderPair(customer_id, wo));
+                this->salary += wo.getPrice();
             }
         }
     }
@@ -200,12 +232,14 @@ void Trainer::closeTrainer() {
 	if (!this->isOpen()) {
 		std::cout << "Trainer does not exist or is not open" << std::endl;
 	} else {
-		// Customers go home - delete them but keep their workouts.
-		this->delAllCustomers();
 
+		// Customers go home - save them in backup vector because of Action log.
+		this->oldCustomers.insert(this->oldCustomers.end(), this->customersList.begin(), this->customersList.end());
+		this->customersList.clear();
+
+		std::cout << "Trainer " + std::to_string(this->id) + " closed. Salary is " + std::to_string(this->getSalary()) + "NIS" << std::endl;
 		// Close terminal.
 		this->open = false;
-		// TODO std::cout << "Trainer " + std::to_string(this->id) + " closed. Salary " + std::to_string(this->getSalary()) + "NIS" << std::endl;
 	}
 
 	
@@ -223,9 +257,10 @@ bool Trainer::isOpen() {
 std::string Trainer::toString() const {
 	std::string out;
 
-	out = "Trainer " + std::to_string(this->id) + " status: " + (this->open ? "open" : "closed") + "\n";
+	out = "Trainer " + std::to_string(this->id) + " status: " + (this->open ? "open" : "closed");
 	
 	if (this->open) {
+		out += "\n";
 		out += "Customers:\n";
 		for (std::size_t i = 0; i < this->customersList.size(); i++) {
 			out += this->customersList[i]->toString() + "\n";
@@ -236,7 +271,7 @@ std::string Trainer::toString() const {
 			out += this->orderList[i].second.getName() + " " + std::to_string(this->orderList[i].second.getPrice()) + "NIS " + std::to_string(this->orderList[i].first) + "\n";
 		}
 
-		// out += this->getSalary(); TODO	
+		out += "Current Trainer's Salary: " + std::to_string(this->salary) + "NIS"; 	
 	}
 	
 	return out;

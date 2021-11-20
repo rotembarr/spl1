@@ -54,12 +54,29 @@ int testTrainer() {
     return 0;
 }
 
-int testWorkout() {
+// class testBackup : public Studio {
+//     public :
+//     int testBackup() {
+//         Studio *studio = new Studio("/home/rotem/projects/spl1/ExmapleInput.txt");
+//         backup = new Studio(*studio);
+
+//         return 0;
+//     }
+// }
+
+int testCopy() {
+    std::vector<BaseAction*> actionsLog;
+    std::vector<BaseAction*> actionsLog2;
+
+    actionsLog.push_back(new Order(9));
+    actionsLog2.push_back(actionsLog[0]);
+
+    std::cout << actionsLog2[0]->toString() << std::endl;
+
     return 0;
 }
 
-int main(int argc, char** argv){
-
+int main(int argc, char** argv) {
     if(argc!=2){
         std::cout << "usage: studio <config_path>" << std::endl;
         return 0;

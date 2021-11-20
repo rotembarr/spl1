@@ -1,5 +1,7 @@
 #include "Studio.h"
 
+extern Studio* backup;
+
 Studio::Studio(): 	
 	open(true),
 	customersCounter(0) {
@@ -31,20 +33,26 @@ Studio::Studio(const std::string &configFilePath) : Studio() {
 		this->trainers.push_back(new Trainer(std::stoi(sCapacity), i));
 	}
 
-	// Workouts.
+	// Workouts.	
 	while (std::getline(confFile, line) && (line == "" || line[0] == '#')) {
 	}
 
+
 	int id = 0;
-	while (std::getline(confFile, line) && (line == "" || line[0] == '#')) {
-		std::string name, type, price;
+	while ((line != "" && line[0] != '#')) {
+		std::string name, type, price, space;
 		std::istringstream stream(line);
 		
 		std::getline(stream, name, ',');
+		std::getline(stream, space, ' ');
 		std::getline(stream, type, ',');
+		std::getline(stream, space, ' ');
 		std::getline(stream, price, ',');
+
 		workout_options.push_back(Workout(id, name, std::stoi(price), Workout::strToType(type))); 
 		id++;
+
+		std::getline(confFile, line);
 	}
 
 	std::cout << "Studio is now open" << std::endl;
@@ -62,10 +70,8 @@ Studio::Studio(const Studio &other):
 
 	// Copy action log.
 	for (size_t i = 0; i < other.actionsLog.size(); i++) {
-		this->actionsLog.push_back(actionsLog[i]->clone());
+		this->actionsLog.push_back(actionsLog[i]);
 	}
-
-	// TODO - correct action log (open action specific)
 }
 
 Studio::Studio(Studio &&other):
@@ -93,12 +99,10 @@ Studio& Studio::operator=(const Studio &other) {
 			this->trainers.push_back(new Trainer(*other.trainers[i])); // new
 		}
 
-		// Copy action log.
+		// Copy action log (deep copy is actually happend).
 		for (size_t i = 0; i < other.actionsLog.size(); i++) {
-			this->actionsLog.push_back(actionsLog[i]->clone());
+			this->actionsLog.push_back(actionsLog[i]);
 		}
-
-		// TODO - correct action log (open action specific)
 	}
 
 	return *this;
@@ -178,68 +182,71 @@ void Studio::start() {
 			this->executeAction(new OpenTrainer(std::stoi(sTrainerId), newCustomers));
 
 
-		// // Order.
-		// } else if (command[0].compare("order"), 0) {
-		// 	std::string sTrainerId = command[1];
+		// Order.
+		} else if (command[0].compare("order") == 0) {
+			std::string sTrainerId = command[1];
 
-		// 	// Create action and do it!!
-		// 	this->executeAction(new Order(std::stoi(sTrainerId)));
+			// Create action and do it!!
+			this->executeAction(new Order(std::stoi(sTrainerId)));
 
-		// // MoveCustomer.
-		// } else if (command[0].compare("move"), 0) {
-		// 	std::string sSourceTrainerId = command[1];
-		// 	std::string sDestTrainerId = command[2];
-		// 	std::string sCustomerId = command[3];
+		// MoveCustomer.
+		} else if (command[0].compare("move") == 0) {
+			std::string sSourceTrainerId = command[1];
+			std::string sDestTrainerId = command[2];
+			std::string sCustomerId = command[3];
 			
-		// 	// Create action and do it!!
-		// 	this->executeAction(new MoveCustomer(std::stoi(sSourceTrainerId), std::stoi(sDestTrainerId), std::stoi(sCustomerId)));
+			// Create action and do it!!
+			this->executeAction(new MoveCustomer(std::stoi(sSourceTrainerId), std::stoi(sDestTrainerId), std::stoi(sCustomerId)));
 
-		// // Close.
-		// } else if (command[0].compare("close"), 0) {
-		// 	std::string sTrainerId = command[1];
+		// Close.
+		} else if (command[0].compare("close") == 0) {
+			std::string sTrainerId = command[1];
 
-		// 	// Create action and do it!!
-		// 	this->executeAction(new Close(std::stoi(sTrainerId)));
+			// Create action and do it!!
+			this->executeAction(new Close(std::stoi(sTrainerId)));
 
-		// // CloaseAll.
-		// } else if (command[0].compare("closeall"), 0) {
+		// CloaseAll.
+		} else if (command[0].compare("closeall") == 0) {
 
-		// 	// Create action and do it!!
-		// 	this->executeAction(new CloseAll());
+			// Create action and do it!!
+			this->executeAction(new CloseAll());
 
-		// // PrintWorkoutOptions.
-		// } else if (command[0].compare("workout_options"), 0) {
+			// close studio
+			this->open = false;
 
-		// 	// Create action and do it!!
-		// 	this->executeAction(new PrintWorkoutOptions());
+		// PrintWorkoutOptions.
+		} else if (command[0].compare("workout_options") == 0) {
 
-		// // PrintTrainerStatus.
-		// } else if (command[0].compare("status"), 0) {
-		// 	std::string sTrainerId = command[1];
+			// Create action and do it!!
+			this->executeAction(new PrintWorkoutOptions());
 
-		// 	// Create action and do it!!
-		// 	this->executeAction(new PrintTrainerStatus(std::stoi(sTrainerId)));
+		// PrintTrainerStatus.
+		} else if (command[0].compare("status") == 0) {
+			std::string sTrainerId = command[1];
 
-		// // PrintActionsLog.
-		// } else if (command[0].compare("log"), 0) {
+			// Create action and do it!!
+			this->executeAction(new PrintTrainerStatus(std::stoi(sTrainerId)));
 
-		// 	// Create action and do it!!
-		// 	this->executeAction(new PrintActionsLog());
+		// PrintActionsLog.
+		} else if (command[0].compare("log") == 0) {
+
+			// Create action and do it!!
+			this->executeAction(new PrintActionsLog());
 		
-		// // BackupStudio.
-		// } else if (command[0].compare("backup"), 0) {
+		// BackupStudio.
+		} else if (command[0].compare("backup") == 0) {
 
-		// 	// Create action and do it!!
-		// 	this->executeAction(new BackupStudio());
+			// Create action and do it!!
+			this->executeAction(new BackupStudio());
 		
-		// // RestoreStudio.
-		// } else if (command[0].compare("restore"), 0) {
+		// RestoreStudio.
+		} else if (command[0].compare("restore") == 0) {
 
-		// 	// Create action and do it!!
-		// 	this->executeAction(new RestoreStudio());
+			// Create action and do it!!
+			this->executeAction(new RestoreStudio());
 
 		} else {
-			std::cout << "No such command -" + command[0] << std::endl;
+			std::cout << "No such command - " + command[0] << std::endl;
 			continue;
 		}
 
@@ -267,10 +274,6 @@ const std::vector<BaseAction*>& Studio::getActionsLog() const {
 
 std::vector<Workout>& Studio::getWorkoutOptions() {
 	return this->workout_options;
-}
-
-std::vector<Trainer*> Studio::getTrainers() const {
-	return this->trainers;
 }
 
 Customer* Studio::createCustomer(std::string type, std::string name, int id) {

@@ -17,6 +17,7 @@ class BaseAction{
 public:
     BaseAction();
     BaseAction(const BaseAction &other);
+    virtual ~BaseAction();
     ActionStatus getStatus() const;
     virtual void act(Studio& studio)=0;
     virtual std::string toString() const=0;
@@ -36,11 +37,10 @@ public:
     OpenTrainer(const OpenTrainer &other);
     void act(Studio &studio);
     std::string toString() const;
-    BaseAction* clone() const;
 private:
 	const int trainerId;
-	std::vector<Customer*> customers;
-    std::vector<Customer> _customers;
+    std::vector<Customer*> customers;
+	std::string command;
 };
 
 

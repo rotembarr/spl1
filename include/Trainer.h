@@ -33,20 +33,15 @@ public:
     int getSalary();
     bool isOpen();
     std::string toString() const;
-    bool operator<(const Trainer &b) const;
-    bool operator>(const Trainer &b) const;
 protected:
-    void delCustomerOrder(int id);
-    void delAllCustomers();
+    void delCustomerOrders(int id);
     void clear();
-    void copy();
 private:
-    int calcSalary() const;
-
     int capacity;
     int salary;
     int id;
     bool open;
+    std::vector<Customer*> oldCustomers; // We have to save all the previous customers in order 
     std::vector<Customer*> customersList;
     std::vector<OrderPair> orderList; //A list of pairs for each order for the trainer - (customer_id, Workout)
 };

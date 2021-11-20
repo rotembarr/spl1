@@ -11,6 +11,10 @@ BaseAction::BaseAction():
 
 BaseAction::~BaseAction(){} // For warnings
 
+BaseAction::BaseAction(const BaseAction &other):
+    errorMsg(other.errorMsg),
+    status(other.status) {
+}
 
 ActionStatus BaseAction::getStatus() const {
     return this->status;
@@ -33,8 +37,14 @@ std::string BaseAction::getErrorMsg() const{
 //  Open Trainer
 OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList): 
     trainerId(id), 
-    customers(customersList) {
+    customers(customersList) { 
 }
+
+OpenTrainer::OpenTrainer(const OpenTrainer &other):
+    BaseAction(other),
+    trainerId(other.trainerId) {
+    // customers(other.customers) { // TODO
+} // TODO
 
 void OpenTrainer::act(Studio &studio){
     Trainer* trainer = studio.getTrainer(this->trainerId);
@@ -50,22 +60,18 @@ void OpenTrainer::act(Studio &studio){
     }
 
     trainer->openTrainer();
-    for (std::size_t i = 0; i < this->customers.size(); i++){
+    for(size_t i = 0; i < this->customers.size(); i++){
         trainer->addCustomer(this->customers[i]);
     }
-
-    // Free pointers because no need for them, they are bad for backup.
-    // but save the command.
-    this->command += "open " + std::to_string(this->trainerId) + " ";
-    for(size_t i = 0; i < this->customers.size(); i++) {
-        this->command += this->customers[i]->getName() + "," + this->customers[i]->customer_type() + " ";
-    }
-    this->customers.clear();
-
 }
 
 std::string OpenTrainer::toString() const{
-    std::string result = this->command;
+    std::string result = "";
+
+    result += "open " + std::to_string(this->trainerId) + " ";
+    for(size_t i = 0; i < this->customers.size(); i++){
+        result += this->customers[i]->getName() + "," + this->customers[i]->customer_type() + " ";
+    }
 
     if(this->getStatus() == COMPLETED){
         result += "Completed";
@@ -75,9 +81,18 @@ std::string OpenTrainer::toString() const{
     return result;
 }
 
+BaseAction* OpenTrainer::clone() const {
+    return new OpenTrainer(*this); 
+}
 
 //  Order
 Order::Order(int id): trainerId(id) {}
+
+Order::Order(const Order &other): 
+    BaseAction(other),  
+    trainerId(other.trainerId) {
+}
+
 
 void Order::act(Studio &studio){
     Trainer* trainer = studio.getTrainer(this->trainerId);
@@ -115,12 +130,26 @@ std::string Order::toString() const{
     return result;
 }
 
+BaseAction* Order::clone() const {
+    return new Order(*this); 
+}
+
+
 //  Move customer
 MoveCustomer::MoveCustomer(int src, int dst, int customerId): 
     srcTrainer(src), 
     dstTrainer(dst), 
     id(customerId) {        
 }
+
+
+MoveCustomer::MoveCustomer(const MoveCustomer &other): 
+    BaseAction(other),  
+    srcTrainer(other.srcTrainer),
+    dstTrainer(other.dstTrainer),
+    id(other.id) {
+}
+
 
 void MoveCustomer::act(Studio &studio){
 
@@ -180,8 +209,19 @@ std::string MoveCustomer::toString() const{
     return result;
 }
 
+BaseAction* MoveCustomer::clone() const {
+    return new MoveCustomer(*this); 
+}
+
+
 //  Close trainer
 Close::Close(int id): trainerId(id){}
+
+
+Close::Close(const Close &other): 
+    BaseAction(other),  
+    trainerId(other.trainerId) {
+}
 
 void Close::act(Studio &studio){
     Trainer* trainer_p = studio.getTrainer(this->trainerId);
@@ -211,8 +251,16 @@ std::string Close::toString() const{
     return result;
 }
 
+BaseAction* Close::clone() const {
+    return new Close(*this); 
+}
+
 //  Close all trainer
 CloseAll::CloseAll(){}
+
+CloseAll::CloseAll(const CloseAll &other): 
+    BaseAction(other) {
+}
 
 void CloseAll::act(Studio &studio){
 
@@ -233,9 +281,19 @@ std::string CloseAll::toString() const {
     return "closeall Completed";
 }
 
+BaseAction* CloseAll::clone() const {
+    return new CloseAll(*this); 
+}
+
 
 //  Print workout options
 PrintWorkoutOptions::PrintWorkoutOptions(){}
+
+
+PrintWorkoutOptions::PrintWorkoutOptions(const PrintWorkoutOptions &other): 
+    BaseAction(other) {
+}
+
 
 void PrintWorkoutOptions::act(Studio &studio){
     std::vector<Workout> workout_opts = studio.getWorkoutOptions();
@@ -248,9 +306,18 @@ std::string PrintWorkoutOptions::toString() const{
     return "workout_options Completed";
 };
 
+BaseAction* PrintWorkoutOptions::clone() const {
+    return new PrintWorkoutOptions(*this); 
+}
+
 
 //  Print trainer status
 PrintTrainerStatus::PrintTrainerStatus(int id): trainerId(id){}
+
+PrintTrainerStatus::PrintTrainerStatus(const PrintTrainerStatus &other): 
+    BaseAction(other),
+    trainerId(other.trainerId) {
+}
 
 void PrintTrainerStatus::act(Studio &studio){
     Trainer* trainer = studio.getTrainer(this->trainerId);    
@@ -275,9 +342,18 @@ std::string PrintTrainerStatus::toString() const{
     return result;
 }
 
+BaseAction* PrintTrainerStatus::clone() const {
+    return new PrintTrainerStatus(*this); 
+}
+
 
 //  Print action log
 PrintActionsLog::PrintActionsLog(){}
+
+PrintActionsLog::PrintActionsLog(const PrintActionsLog &other): 
+    BaseAction(other) {
+}
+
 void PrintActionsLog::act(Studio &studio){
     std::vector<BaseAction*> actionLog = studio.getActionsLog();
     for(size_t i = 0; i < actionLog.size(); i++){
@@ -289,8 +365,16 @@ std::string PrintActionsLog::toString() const{
     return "log Completed";
 }
 
+BaseAction* PrintActionsLog::clone() const {
+    return new PrintActionsLog(*this); 
+}
+
 //  Backup studio
 BackupStudio::BackupStudio(){}
+
+BackupStudio::BackupStudio(const BackupStudio &other): 
+    BaseAction(other) {
+}
 
 void BackupStudio::act(Studio &studio){
     backup = new Studio(studio);
@@ -301,8 +385,17 @@ std::string BackupStudio::toString() const{
     return "backup Completed";
 }
 
+BaseAction* BackupStudio::clone() const {
+    return new BackupStudio(*this); 
+}
+
 // Restore studio.
 RestoreStudio::RestoreStudio() {}
+
+RestoreStudio::RestoreStudio(const RestoreStudio &other): 
+    BaseAction(other) {
+}
+
 
 void RestoreStudio::act(Studio &studio) {
     studio = *backup;
@@ -310,4 +403,8 @@ void RestoreStudio::act(Studio &studio) {
 
 std::string RestoreStudio::toString() const {
     return "restore Completed";
+}
+
+BaseAction* RestoreStudio::clone() const {
+    return new RestoreStudio(*this); 
 }

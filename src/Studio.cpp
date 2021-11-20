@@ -66,12 +66,13 @@ Studio::Studio(const Studio &other):
 	// Copy trainers.
 	for (std::size_t i = 0; i < other.trainers.size(); i++) {
 		this->trainers.push_back(new Trainer(*other.trainers[i])); // new
-	}
+	}	
 
 	// Copy action log.
 	for (size_t i = 0; i < other.actionsLog.size(); i++) {
-		this->actionsLog.push_back(actionsLog[i]);
+		this->actionsLog.push_back(other.actionsLog[i]->clone());
 	}
+
 }
 
 Studio::Studio(Studio &&other):
@@ -101,7 +102,7 @@ Studio& Studio::operator=(const Studio &other) {
 
 		// Copy action log (deep copy is actually happend).
 		for (size_t i = 0; i < other.actionsLog.size(); i++) {
-			this->actionsLog.push_back(actionsLog[i]);
+			this->actionsLog.push_back(other.actionsLog[i]->clone());
 		}
 	}
 

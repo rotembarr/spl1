@@ -24,6 +24,8 @@ SweatyCustomer::SweatyCustomer(std::string name, int id):
     Customer(name, id) {
 }
 
+
+
 std::vector<int> SweatyCustomer::order(const std::vector<Workout> &workout_options){
     std::vector<int> id_vector = std::vector<int>();
 
@@ -42,6 +44,10 @@ std::string SweatyCustomer::toString() const {
 
 std::string SweatyCustomer::customer_type() const{
     return "swt";
+}
+
+Customer* SweatyCustomer::clone() const {
+    return new SweatyCustomer(*this);
 }
 
 //  Cheap Customer
@@ -73,6 +79,12 @@ std::string CheapCustomer::customer_type() const{
 }
 
 
+Customer* CheapCustomer::clone() const {
+    return new CheapCustomer(*this);
+}
+
+
+
 //  Heavy Muscle Customer
 HeavyMuscleCustomer::HeavyMuscleCustomer(std::string name, int id): 
     Customer(name, id) {
@@ -102,6 +114,10 @@ std::string HeavyMuscleCustomer::toString() const {
 
 std::string HeavyMuscleCustomer::customer_type() const{
     return "mcl";
+}
+
+Customer* HeavyMuscleCustomer::clone() const {
+    return new HeavyMuscleCustomer(*this);
 }
 
 
@@ -150,4 +166,8 @@ std::string FullBodyCustomer::toString() const{
 
 std::string FullBodyCustomer::customer_type() const{
     return "fbd";
+}
+
+Customer* FullBodyCustomer::clone() const {
+    return new FullBodyCustomer(*this);
 }

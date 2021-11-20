@@ -22,11 +22,11 @@ Trainer::Trainer(const Trainer& other):
 	orderList(other.orderList) {
 
 	for (std::size_t i = 0; i < other.oldCustomers.size(); i++) {
-		this->oldCustomers.push_back(other.oldCustomers[i]); // new
+		this->oldCustomers.push_back(other.oldCustomers[i]->clone()); // new
 	}
 
 	for (std::size_t i = 0; i < other.customersList.size(); i++) {
-		this->customersList.push_back(other.customersList[i]); // new
+		this->customersList.push_back(other.customersList[i]->clone()); // new
 	}
 
 }
@@ -58,11 +58,11 @@ Trainer& Trainer::operator=(const Trainer& other) {
 		this->open 		= other.open;
 
 		for (std::size_t i = 0; i < other.oldCustomers.size(); i++) {
-			this->oldCustomers.push_back(other.oldCustomers[i]); // new
+			this->oldCustomers.push_back(other.oldCustomers[i]->clone()); // new
 		}
 
 		for (std::size_t i = 0; i < other.customersList.size(); i++) {
-			this->customersList.push_back(other.customersList[i]); // new
+			this->customersList.push_back(other.customersList[i]->clone()); // new
 		}
 
 		this->orderList = std::vector<OrderPair>(other.orderList);

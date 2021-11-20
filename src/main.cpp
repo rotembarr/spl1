@@ -50,33 +50,75 @@ int testTrainer() {
     std::cout << trainer4.toString() << std::endl;
     std::cout << trainer5.toString() << std::endl;
 
+    return 0;
+}
+
+int testBackup() {
+    Studio *studio = new Studio("/home/rotem/projects/spl1/ExmapleInput.txt");
+
+    std::vector<Customer*> customers1;
+    customers1.push_back(new SweatyCustomer("a1",11));
+    customers1.push_back(new CheapCustomer("b1",12));
+    customers1.push_back(new HeavyMuscleCustomer("c1",13));
+    customers1.push_back(new FullBodyCustomer("d1",14));
+    studio->executeAction(new OpenTrainer(1, customers1));
+    studio->executeAction(new Order(1));
+
+    std::vector<Customer*> customers2;
+    customers2.push_back(new CheapCustomer("b2",22));
+    customers2.push_back(new HeavyMuscleCustomer("c2",23));
+    studio->executeAction(new OpenTrainer(2, customers2));
+    studio->executeAction(new Order(2));
+
+    std::cout << "\n~~~~~~~~~~~~~~~~~~Origin studio" << std::endl;
+    studio->executeAction(new PrintTrainerStatus(1));
+    studio->executeAction(new PrintTrainerStatus(2));
+    
+    std::cout << std::endl;
+    studio->executeAction(new PrintActionsLog());
+
+    // Backup
+    backup = new Studio(*studio);
+    std::cout << "\n~~~~~~~~~~~~~~~~~~Backup studio" << std::endl;
+    backup->executeAction(new PrintTrainerStatus(1));
+    backup->executeAction(new PrintTrainerStatus(2));
+
+    std::cout << std::endl;
+    backup->executeAction(new PrintActionsLog());
+
+    std::cout << "\n~~~~~~~~~~~~~~~~~~Close Origin" << std::endl;
+    studio->executeAction(new CloseAll());
+    studio->executeAction(new PrintTrainerStatus(1));
+    backup->executeAction(new PrintTrainerStatus(1));
+
 
     return 0;
 }
 
-// class testBackup : public Studio {
-//     public :
-//     int testBackup() {
-//         Studio *studio = new Studio("/home/rotem/projects/spl1/ExmapleInput.txt");
-//         backup = new Studio(*studio);
-
-//         return 0;
-//     }
-// }
-
 int testCopy() {
-    std::vector<BaseAction*> actionsLog;
-    std::vector<BaseAction*> actionsLog2;
+    Trainer* t1 = new Trainer(7,1);
+    t1->openTrainer();
+    t1->addCustomer(new SweatyCustomer("a",9));
+    Trainer t2(*t1);
 
-    actionsLog.push_back(new Order(9));
-    actionsLog2.push_back(actionsLog[0]);
+    std::cout << "\n~~~~~~~~~~~~~~~~~~Before" << std::endl;
+    std::cout << t1->getCustomers().size() << std::endl;
+    std::cout << t2.getCustomers().size() << std::endl;
 
-    std::cout << actionsLog2[0]->toString() << std::endl;
+    std::cout << "\n~~~~~~~~~~~~~~~~~~After" << std::endl;
+    delete t1->getCustomer(9);
+    t1->removeCustomer(9);
+    std::cout << t1->getCustomers().size() << std::endl;
+    std::cout << t2.getCustomers().size() << std::endl;
+    std::cout << t2.getCustomer(9)->toString() << std::endl;
+    std::cout << t1->getCustomer(9)->toString() << std::endl;
 
     return 0;
 }
 
 int main(int argc, char** argv) {
+    return testBackup();
+
     if(argc!=2){
         std::cout << "usage: studio <config_path>" << std::endl;
         return 0;

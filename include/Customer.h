@@ -5,7 +5,7 @@
 #include <string>
 #include <limits>
 #include <algorithm>
-#include "../include/Workout.h"
+#include "Workout.h"
 
 class Customer{
 public:
@@ -14,6 +14,7 @@ public:
     virtual std::vector<int> order(const std::vector<Workout> &workout_options)=0;
     virtual std::string toString() const = 0;
     virtual std::string customer_type() const = 0;
+    virtual Customer* clone() const = 0;
     std::string getName() const;
     int getId() const;
 private:
@@ -27,6 +28,7 @@ public:
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
     std::string customer_type() const;
+    Customer* clone() const;
 private:
 };
 
@@ -37,6 +39,7 @@ public:
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
     std::string customer_type() const;
+    Customer* clone() const;
 private:
 };
 
@@ -47,6 +50,7 @@ public:
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
     std::string customer_type() const;
+    Customer* clone() const;
 private:
 };
 
@@ -57,6 +61,7 @@ public:
     std::vector<int> order(const std::vector<Workout> &workout_options);
     std::string toString() const;
     std::string customer_type() const;
+    Customer* clone() const;
 private:
 };
 

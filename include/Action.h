@@ -42,6 +42,7 @@ public:
 private:
 	const int trainerId;
 	std::vector<Customer*> customers;
+    std::string command;
 };
 
 

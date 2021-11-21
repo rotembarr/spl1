@@ -87,9 +87,9 @@ int testBackup() {
     backup->executeAction(new PrintActionsLog());
 
     std::cout << "\n~~~~~~~~~~~~~~~~~~Close Origin" << std::endl;
-    studio->executeAction(new CloseAll());
-    studio->executeAction(new PrintTrainerStatus(1));
+    delete studio;
     backup->executeAction(new PrintTrainerStatus(1));
+    backup->executeAction(new PrintActionsLog());
 
 
     return 0;
@@ -117,7 +117,6 @@ int testCopy() {
 }
 
 int main(int argc, char** argv) {
-    return testBackup();
 
     if(argc!=2){
         std::cout << "usage: studio <config_path>" << std::endl;

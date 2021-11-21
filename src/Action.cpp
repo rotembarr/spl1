@@ -37,14 +37,17 @@ std::string BaseAction::getErrorMsg() const{
 //  Open Trainer
 OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList): 
     trainerId(id), 
-    customers(customersList) { 
+    customers(customersList),
+    command("") { 
+
 }
 
 OpenTrainer::OpenTrainer(const OpenTrainer &other):
     BaseAction(other),
-    trainerId(other.trainerId) {
-    // customers(other.customers) { // TODO
-} // TODO
+    trainerId(other.trainerId),
+    customers(other.customers),
+    command(other.command) { 
+} 
 
 void OpenTrainer::act(Studio &studio){
     Trainer* trainer = studio.getTrainer(this->trainerId);
@@ -60,18 +63,22 @@ void OpenTrainer::act(Studio &studio){
     }
 
     trainer->openTrainer();
+    for(size_t i = 0; i < this->customers.size(); i++) {
+        if (trainer->getCustomers().size() < (size_t)trainer->getCapacity()) {
+            trainer->addCustomer(this->customers[i]);
+        }
+    } 
+
+    // Save command in order not to save customer list
+    this->command += "open " + std::to_string(this->trainerId) + " ";
     for(size_t i = 0; i < this->customers.size(); i++){
-        trainer->addCustomer(this->customers[i]);
+        this->command += this->customers[i]->getName() + "," + this->customers[i]->customer_type() + " ";
     }
+    this->customers.clear();
 }
 
 std::string OpenTrainer::toString() const{
-    std::string result = "";
-
-    result += "open " + std::to_string(this->trainerId) + " ";
-    for(size_t i = 0; i < this->customers.size(); i++){
-        result += this->customers[i]->getName() + "," + this->customers[i]->customer_type() + " ";
-    }
+    std::string result = this->command;
 
     if(this->getStatus() == COMPLETED){
         result += "Completed";
@@ -183,7 +190,6 @@ void MoveCustomer::act(Studio &studio){
         return;
     }
 
-
     //  Add customer to dst trainer
     dstTrainer_p->addCustomer(customer_p);
     //  Add customer orders to dst trainer
@@ -192,7 +198,7 @@ void MoveCustomer::act(Studio &studio){
     //  Remove customer and customers orders from src trainer.
     srcTrainer_p->removeCustomer(this->id);
 
-    //  Close trainer if her has no customers left.
+    //  Close trainer if he has no customers left.
     if(srcTrainer_p->getCustomers().empty())
         srcTrainer_p->closeTrainer();
 
@@ -398,11 +404,21 @@ RestoreStudio::RestoreStudio(const RestoreStudio &other):
 
 
 void RestoreStudio::act(Studio &studio) {
-    studio = *backup;
+    if (backup == nullptr) {
+        std::cout << "No backup available" << std::endl;
+        this->error("No backup available");
+    } else {
+        studio = *backup;
+        this->complete();
+    }
 }
 
 std::string RestoreStudio::toString() const {
-    return "restore Completed";
+    if (this->getStatus() == COMPLETED) {
+        return "restore Completed";
+    } else {
+        return "restore Error: " + this->getErrorMsg();
+    }
 }
 
 BaseAction* RestoreStudio::clone() const {

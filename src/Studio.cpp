@@ -75,6 +75,7 @@ Studio::Studio(const Studio &other):
 		this->trainers.push_back(new Trainer(*other.trainers[i])); // new
 	}	
 
+	// Chupa Notes: We need to change the refrences in actionLog to the copied customer inside Trainer^^^.
 	// Copy action log.
 	for (size_t i = 0; i < other.actionsLog.size(); i++) {
 		this->actionsLog.push_back(other.actionsLog[i]->clone());
@@ -107,6 +108,7 @@ Studio& Studio::operator=(const Studio &other) {
 			this->trainers.push_back(new Trainer(*other.trainers[i])); // new
 		}
 
+		// Chupa Notes: We need to change the refrences in actionLog to the copied customer inside Trainer^^^.
 		// Copy action log (deep copy is actually happend).
 		for (size_t i = 0; i < other.actionsLog.size(); i++) {
 			this->actionsLog.push_back(other.actionsLog[i]->clone());
@@ -116,7 +118,6 @@ Studio& Studio::operator=(const Studio &other) {
 	return *this;
 
 }
-
 
 Studio& Studio::operator=(Studio &&other) {
 	if (this != &other) {
@@ -134,7 +135,6 @@ Studio& Studio::operator=(Studio &&other) {
 
 	return (*this);
 }
-
 
 void Studio::clear() {
 	while (this->trainers.size() != 0) {

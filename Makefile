@@ -37,4 +37,4 @@ run : comp
 	${BIN}/studio ExmapleInput.txt
 
 mem_check : comp
-	valgrind --leak-check=full --show-reachable=yes $(BIN)/studio 
+	valgrind --leak-check=full --show-reachable=yes $(BIN)/studio ExmapleInput.txt

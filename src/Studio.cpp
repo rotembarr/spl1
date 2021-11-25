@@ -52,7 +52,14 @@ Studio::Studio(const std::string &configFilePath) : Studio() {
 		workout_options.push_back(Workout(id, name, std::stoi(price), Workout::strToType(type))); 
 		id++;
 
+		std::string lastLine(line);
 		std::getline(confFile, line);
+
+		// For safety.
+		if (line.compare(lastLine) == 0) {
+			line = "";
+		}
+
 	}
 
 	std::cout << "Studio is now open" << std::endl;

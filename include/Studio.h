@@ -29,7 +29,7 @@ public:
 	const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
     std::vector<Workout>& getWorkoutOptions();
     bool isOpen();
-// protected: TODO
+protected: 
     Customer* createCustomer(std::string type, std::string name, int id);
     void executeAction(BaseAction* action);
     void clear();

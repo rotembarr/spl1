@@ -194,7 +194,6 @@ void Trainer::order(const int customer_id, const std::vector<int> workout_ids, c
     for(int ord : cOrders){
         for(Workout wo : workout_options){
             if(wo.getId() == ord) {
-                std::cout << customer->getName() + " Is Doing " + wo.getName() << std::endl;
                 this->orderList.push_back(OrderPair(customer_id, wo));
                 this->salary += wo.getPrice();
             }

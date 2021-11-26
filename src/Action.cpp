@@ -77,10 +77,9 @@ void OpenTrainer::act(Studio &studio){
         this->command += this->customers[i]->getName() + "," + this->customers[i]->customer_type() + " ";
         if (trainer->emptySpots() > 0) {
             trainer->addCustomer(this->customers[i]);
+        } else {
+            delete this->customers[i];
         }
-        // } else {
-        //     delete this->customers[i];
-        // }
     } 
     this->customers.clear();
     this->complete();
@@ -127,11 +126,19 @@ void Order::act(Studio &studio){
         return;
     }
 
-
     //  Start the trainers order
     std::vector<Customer*> customer_list = trainer->getCustomers();
+    std::vector<int> customer_order;
     for(size_t i = 0; i < customer_list.size(); i++){
-        trainer->order(customer_list[i]->getId(), customer_list[i]->order(studio.getWorkoutOptions()), studio.getWorkoutOptions());
+        customer_order = customer_list[i]->order(studio.getWorkoutOptions());
+        trainer->order(customer_list[i]->getId(), customer_order, studio.getWorkoutOptions());
+        for(int ord : customer_order){
+            for(Workout wo : studio.getWorkoutOptions()){
+                if(wo.getId() == ord) {
+                    std::cout << customer_list[i]->getName() + " Is Doing " + wo.getName() << std::endl;
+                }
+        }
+    }
     }
 
     this->complete();

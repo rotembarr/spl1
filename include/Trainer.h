@@ -32,6 +32,7 @@ public:
     void closeTrainer();
     int getSalary();
     bool isOpen();
+    int emptySpots() const;
     std::string toString() const;
 protected:
     void delCustomerOrders(int id);

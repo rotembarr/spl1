@@ -51,30 +51,39 @@ OpenTrainer::OpenTrainer(const OpenTrainer &other):
 
 void OpenTrainer::act(Studio &studio){
     Trainer* trainer = studio.getTrainer(this->trainerId);
+    // Save command in order not to save customer list
+    this->command += "open " + std::to_string(this->trainerId) + " ";
 
     if(trainer == nullptr){
         this->error("Workout session does not exist or is already open");
+        std::cout << this->getErrorMsg() << std::endl;
         return;
     }
 
     if(trainer->isOpen()){
         this->error("Workout session does not exist or is already open");
+        std::cout << this->getErrorMsg() << std::endl;
+        return;
+    }
+
+    //  If we get a customer vector of size 0 this mean no new customers -> empty Trainer -> close trainer.
+    if(this->customers.size() == 0){
+        this->complete();
         return;
     }
 
     trainer->openTrainer();
     for(size_t i = 0; i < this->customers.size(); i++) {
-        if (trainer->getCustomers().size() < (size_t)trainer->getCapacity()) {
+        this->command += this->customers[i]->getName() + "," + this->customers[i]->customer_type() + " ";
+        if (trainer->emptySpots() > 0) {
             trainer->addCustomer(this->customers[i]);
         }
+        // } else {
+        //     delete this->customers[i];
+        // }
     } 
-
-    // Save command in order not to save customer list
-    this->command += "open " + std::to_string(this->trainerId) + " ";
-    for(size_t i = 0; i < this->customers.size(); i++){
-        this->command += this->customers[i]->getName() + "," + this->customers[i]->customer_type() + " ";
-    }
     this->customers.clear();
+    this->complete();
 }
 
 std::string OpenTrainer::toString() const{
@@ -107,12 +116,14 @@ void Order::act(Studio &studio){
     //  No trainer exists
     if(trainer == nullptr){
         this->error("Trainer does not exist or is not open");
+        std::cout << this->getErrorMsg() << std::endl;
         return;
     }
 
     //  Trainer is closed
     if (!trainer->isOpen()){
         this->error("Trainer does not exist or is not open");
+        std::cout << this->getErrorMsg() << std::endl;
         return;
     }
 
@@ -163,30 +174,39 @@ void MoveCustomer::act(Studio &studio){
     //  Get trainers and customer.
     Trainer* srcTrainer_p = studio.getTrainer(this->srcTrainer);
     Trainer* dstTrainer_p = studio.getTrainer(this->dstTrainer);
-    Customer* customer_p = srcTrainer_p->getCustomer(this->id);
-
 
     //  No trainer / customer exists
-    if((srcTrainer_p == nullptr) | (dstTrainer_p == nullptr) | (customer_p == nullptr)){
+    if((srcTrainer_p == nullptr) | (dstTrainer_p == nullptr)){
         this->error("Cannot move costumer");
+        std::cout << this->getErrorMsg() << std::endl;
+        return;
+    }
+
+    Customer* customer_p = srcTrainer_p->getCustomer(this->id);
+    if(customer_p == nullptr){
+        this->error("Cannot move costumer");
+        std::cout << this->getErrorMsg() << std::endl;
         return;
     }
 
     //  Either trainer is closed
     if((!srcTrainer_p->isOpen()) | (!dstTrainer_p->isOpen())){
         this->error("Cannot move costumer");
+        std::cout << this->getErrorMsg() << std::endl;
         return;
     }
 
     //  Customer is not under src Trainer
     if(srcTrainer_p->getCustomer(this->id) == nullptr){
         this->error("Cannot move costumer");
+        std::cout << this->getErrorMsg() << std::endl;
         return;
     }
 
     //  No capacity in dst Trainer for customers workout.
-    if(dstTrainer_p->getCapacity() - dstTrainer_p->getOrders().size() < customer_p->order(studio.getWorkoutOptions()).size()){
+    if(dstTrainer_p->emptySpots() <= 0){
         this->error("Cannot move costumer");
+        std::cout << this->getErrorMsg() << std::endl;
         return;
     }
 
@@ -234,11 +254,13 @@ void Close::act(Studio &studio){
 
     if(trainer_p == nullptr){
         this->error("Trainer does not exist or is not open.");
+        std::cout << this->getErrorMsg() << std::endl;
         return;
     }
 
     if(!trainer_p->isOpen()){
         this->error("Trainer does not exist or is not open.");
+        std::cout << this->getErrorMsg() << std::endl;
         return;
     }
 
@@ -250,9 +272,9 @@ std::string Close::toString() const{
 
     result += "close " + std::to_string(this->trainerId) + " ";
     if(this->getStatus() == COMPLETED){
-        result += " Completed";
+        result += "Completed";
     } else {
-        result += " Error: " + this->getErrorMsg();
+        result += "Error: " + this->getErrorMsg();
     }
     return result;
 }
@@ -330,6 +352,7 @@ void PrintTrainerStatus::act(Studio &studio){
 
     if(trainer == nullptr){
         this->error("Trainer does not exist");
+        std::cout << this->getErrorMsg() << std::endl;
         return;
     }
 
@@ -383,7 +406,9 @@ BackupStudio::BackupStudio(const BackupStudio &other):
 }
 
 void BackupStudio::act(Studio &studio){
+    Studio* tmp = backup;
     backup = new Studio(studio);
+    delete tmp;
     this->complete();
 }
 

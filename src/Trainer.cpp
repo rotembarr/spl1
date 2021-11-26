@@ -21,6 +21,8 @@ Trainer::Trainer(const Trainer& other):
 	open(other.open), 
 	orderList(other.orderList) {
 
+	this->clear();
+
 	for (std::size_t i = 0; i < other.customersList.size(); i++) {
 		this->customersList.push_back(other.customersList[i]->clone()); // new
 	}
@@ -237,6 +239,9 @@ bool Trainer::isOpen() {
 	return this->open; 
 }
 
+int Trainer::emptySpots() const{
+	return this->getCapacity() - this->customersList.size();
+}
 
 std::string Trainer::toString() const {
 	std::string out;

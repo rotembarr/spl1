@@ -70,6 +70,8 @@ Studio::Studio(const Studio &other):
 	customersCounter(0),
 	workout_options(other.workout_options) {
 
+	// this->clear();
+	
 	// Copy trainers.
 	for (std::size_t i = 0; i < other.trainers.size(); i++) {
 		this->trainers.push_back(new Trainer(*other.trainers[i])); // new
@@ -179,11 +181,14 @@ void Studio::start() {
 			std::vector<Customer*> newCustomers;
 			std::string sTrainerId = command[1];
 
+			Trainer* trainer = this->getTrainer(std::stoi(sTrainerId));
+
 			for (std::size_t i = 2; i < command.size(); i++) {
 				std::string sCustomerName = command[i].substr(0,command[i].size()-4);
 				std::string sCustomerStrategy = command[i].substr(command[i].size()-3,command[i].size()-1);
 
-				newCustomers.push_back(this->createCustomer(sCustomerStrategy, sCustomerName, this->customersCounter++));
+				if(trainer != nullptr && trainer->emptySpots() - newCustomers.size() > 0)
+					newCustomers.push_back(this->createCustomer(sCustomerStrategy, sCustomerName, this->customersCounter++));
 			}
 
 			// Create action and do it!!

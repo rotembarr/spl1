@@ -57,12 +57,18 @@ void OpenTrainer::act(Studio &studio){
     if(trainer == nullptr){
         this->error("Workout session does not exist or is already open");
         std::cout << this->getErrorMsg() << std::endl;
+        for(size_t i = 0 ; i < this->customers.size(); i++){
+            delete this->customers[i];
+        }
         return;
     }
 
     if(trainer->isOpen()){
         this->error("Workout session does not exist or is already open");
         std::cout << this->getErrorMsg() << std::endl;
+        for(size_t i = 0 ; i < this->customers.size(); i++){
+            delete this->customers[i];
+        }
         return;
     }
 
@@ -415,7 +421,8 @@ BackupStudio::BackupStudio(const BackupStudio &other):
 void BackupStudio::act(Studio &studio){
     Studio* tmp = backup;
     backup = new Studio(studio);
-    delete tmp;
+    if(tmp != nullptr)
+        delete tmp;
     this->complete();
 }
 

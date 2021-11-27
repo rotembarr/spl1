@@ -21,14 +21,11 @@ Trainer::Trainer(const Trainer& other):
 	open(other.open), 
 	orderList(other.orderList) {
 
-	this->clear();
-
 	for (std::size_t i = 0; i < other.customersList.size(); i++) {
 		this->customersList.push_back(other.customersList[i]->clone()); // new
 	}
 
 }
-
 
 Trainer::Trainer(Trainer&& other):
 	capacity(other.capacity),
@@ -223,6 +220,7 @@ void Trainer::closeTrainer() {
 			delete temp;
 		}
 
+		this->orderList.clear();
 		std::cout << "Trainer " + std::to_string(this->id) + " closed. Salary is " + std::to_string(this->getSalary()) + "NIS" << std::endl;
 		this->open = false;
 	}

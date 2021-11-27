@@ -67,7 +67,7 @@ Studio::Studio(const std::string &configFilePath) : Studio() {
 
 Studio::Studio(const Studio &other): 
 	open(other.open),
-	customersCounter(0),
+	customersCounter(other.customersCounter),
 	workout_options(other.workout_options) {
 	
 	// Copy trainers.
@@ -176,7 +176,7 @@ void Studio::start() {
 		}
 
 		if (command[0].compare("open") == 0) {
-			std::vector<Customer*> newCustomers;
+			std::vector<Customer*> newCustomers = std::vector<Customer*>();
 			std::string sTrainerId = command[1];
 
 			Trainer* trainer = this->getTrainer(std::stoi(sTrainerId));
@@ -185,9 +185,8 @@ void Studio::start() {
 				std::string sCustomerName = command[i].substr(0,command[i].size()-4);
 				std::string sCustomerStrategy = command[i].substr(command[i].size()-3,command[i].size()-1);
 
-				if(trainer != nullptr)
-					newCustomers.push_back(this->createCustomer(sCustomerStrategy, sCustomerName, this->customersCounter));
-				if(trainer->emptySpots() - newCustomers.size() > 0)
+				newCustomers.push_back(this->createCustomer(sCustomerStrategy, sCustomerName, this->customersCounter));
+				if((trainer != nullptr) && ((trainer->emptySpots() - (int)newCustomers.size()) >= 0))
 					this->customersCounter++;
 			}
 
